@@ -46,6 +46,9 @@
     <Compile Include="Core\IncrementalBackupItem.cs" />
     <Compile Include="Core\PurgeBackupItem.cs" />
     <Compile Include="Core\UpdateBackupItem.cs" />
+    <Compile Include="IO\CopyFileEx.cs" />
+    <Compile Include="IO\IIOProgressHandler.cs" />
+    <Compile Include="IO\IOOperation.cs" />
     <Compile Include="IO\OperationManager.cs" />
     <Compile Include="IO\OperationWorker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

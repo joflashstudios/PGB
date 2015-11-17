@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace PGBLib.IO
 {
-    internal class OperationWorker
+    interface IIOProgressHandler
     {
-        internal Queue<>
     }
 }
