@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -46,7 +47,7 @@
     <Compile Include="Core\IncrementalBackupItem.cs" />
     <Compile Include="Core\PurgeBackupItem.cs" />
     <Compile Include="Core\UpdateBackupItem.cs" />
-    <Compile Include="IO\CopyFileEx.cs" />
+    <Compile Include="IO\FileCopier.cs" />
     <Compile Include="IO\IIOProgressHandler.cs" />
     <Compile Include="IO\IOOperation.cs" />
     <Compile Include="IO\OperationManager.cs" />

@@ -8,6 +8,6 @@ namespace PGBLib.IO
 {
     internal class OperationWorker
     {
-        internal Queue<>
+
     }
 }
