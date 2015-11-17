@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PGB", "PGB\PGB.csproj", "{970C80C9-163A-464F-ACC9-2EC37C9A62A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PGBLib", "PGBLib\PGBLib.csproj", "{FD501EF6-F5FE-40C1-9372-7C9EF9F7C44C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PGBCore", "PGBLib\PGBCore.csproj", "{FD501EF6-F5FE-40C1-9372-7C9EF9F7C44C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
