@@ -44,8 +44,8 @@ namespace PGBLib.IO.Win32
                     CopyProgressRoutine routine = (total, transferred, streamSize, StreamByteTrans, dwStreamNumber, reason, hSourceFile, hDestinationFile, lpData) => {
                         return progressHandler(total, transferred, reason, source, destination);
                     };
-                    bool result = CopyFileEx(source, destination, routine, IntPtr.Zero, cancelp, flags);
-                    if (!result)
+
+                    if(!CopyFileEx(source, destination, routine, IntPtr.Zero, cancelp, flags))
                     {
                         HandleCopyExError(source, destination, Marshal.GetLastWin32Error());
                         return;

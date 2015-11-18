@@ -48,8 +48,10 @@
     <Compile Include="Core\Incremental\IncrementalBackupItemStep.cs" />
     <Compile Include="Core\PurgeBackupItem.cs" />
     <Compile Include="Core\UpdateBackupItem.cs" />
+    <Compile Include="IO\Exceptions\DirectoryAlreadyExistsException.cs" />
     <Compile Include="IO\Exceptions\SharingViolationException.cs" />
     <Compile Include="IO\Win32\Delegates.cs" />
+    <Compile Include="IO\Win32\DirectoryCopier.cs" />
     <Compile Include="IO\Win32\Enums.cs" />
     <Compile Include="IO\Win32\FileCopier.cs" />
     <Compile Include="IO\IOOperation.cs" />

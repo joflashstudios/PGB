@@ -10,6 +10,8 @@ namespace PGBLib.IO.Win32
     {
         public static void RunTest()
         {
+            DirectoryCloner.CloneDirectory(@"C:\Windows\System32", @"C:\Windows\savedpoop");
+
             int callbackCount = 0;
             CopyProgressCallback routine = (total, transferred, reason, sourceFile, destinationFile) =>
             {
@@ -20,7 +22,7 @@ namespace PGBLib.IO.Win32
             };
 
             bool cancel = false;
-            FileCopier.Copy(@"C:\Users\Elizabeth\Documents\TTC 15 Niger Thank You Video\Maradi Youth Camp 015.MOV", @"C:\users\elizabeth\testfile.file", ref cancel, routine);
+            FileCopier.Copy(@"C:\Users\Elizabeth\Documents\TTC 15 Niger Thank You Video\Maradi Youth Camp 015.MOV", @"C:\Users\Elizabeth\Documents\SavedPoop\.poop", ref cancel, routine);
         }
     }
 }
