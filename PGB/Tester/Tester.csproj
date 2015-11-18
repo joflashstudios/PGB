@@ -4,15 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FD501EF6-F5FE-40C1-9372-7C9EF9F7C44C}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{1151DCEC-9EB2-495C-8CBE-B3EE5550B6E7}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PGBLib</RootNamespace>
-    <AssemblyName>PGBLib</AssemblyName>
+    <RootNamespace>Tester</RootNamespace>
+    <AssemblyName>Tester</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -20,9 +22,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -41,24 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Backup.cs" />
-    <Compile Include="Core\BackupItem.cs" />
-    <Compile Include="Core\FileBackupItem.cs" />
-    <Compile Include="Core\IncrementalBackupItem.cs" />
-    <Compile Include="Core\Incremental\IncrementalBackupItemStep.cs" />
-    <Compile Include="Core\PurgeBackupItem.cs" />
-    <Compile Include="Core\UpdateBackupItem.cs" />
-    <Compile Include="IO\Exceptions\SharingViolationException.cs" />
-    <Compile Include="IO\FileCopier.cs" />
-    <Compile Include="IO\IIOProgressHandler.cs" />
-    <Compile Include="IO\IOOperation.cs" />
-    <Compile Include="IO\IOTest.cs" />
-    <Compile Include="IO\OperationManager.cs" />
-    <Compile Include="IO\OperationWorker.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Restoration\" />
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PGBLib\PGBCore.csproj">
+      <Project>{fd501ef6-f5fe-40c1-9372-7c9ef9f7c44c}</Project>
+      <Name>PGBCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
