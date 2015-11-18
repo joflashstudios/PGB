@@ -10,7 +10,7 @@ namespace Tester
     {
         static void Main(string[] args)
         {
-            PGBLib.IO.IOTest.RunTest();
+            PGBLib.IO.Win32.IOTest.RunTest();
         }
     }
 }

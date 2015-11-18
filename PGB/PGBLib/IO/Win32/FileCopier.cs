@@ -77,7 +77,6 @@ namespace PGBLib.IO.Win32
                     if(!CopyFileEx(source, destination, routine, IntPtr.Zero, cancelp, flags))
                     {
                         HandleCopyExError(source, destination, Marshal.GetLastWin32Error());
-                        return;
                     }
                 }
             }
