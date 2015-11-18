@@ -71,7 +71,11 @@ namespace PGBLib.IO.Win32
                 fixed (Boolean* cancelp = &cancel)
                 {
                     CopyProgressRoutine routine = (total, transferred, streamSize, StreamByteTrans, dwStreamNumber, reason, hSourceFile, hDestinationFile, lpData) => {
-                        return progressHandler(total, transferred, reason, source, destination);
+                        if (progressHandler != null)
+                        {
+                            return progressHandler(total, transferred, reason, source, destination);
+                        }
+                        return CopyProgressResult.PROGRESS_CONTINUE;
                     };
 
                     if(!CopyFileEx(source, destination, routine, IntPtr.Zero, cancelp, flags))
@@ -112,6 +116,8 @@ namespace PGBLib.IO.Win32
                         string.Format("The source or destination file was in use when copying '{0}' to '{1}'.", source, destination),
                         win32Exception);
                     break;
+                case Win32Error.ERROR_REQUEST_ABORTED:
+                    return;
                 default:
                     error = win32Exception;
                     break;
