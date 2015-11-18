@@ -50,7 +50,6 @@
     <Compile Include="Core\UpdateBackupItem.cs" />
     <Compile Include="IO\Exceptions\SharingViolationException.cs" />
     <Compile Include="IO\FileCopier.cs" />
-    <Compile Include="IO\IIOProgressHandler.cs" />
     <Compile Include="IO\IOOperation.cs" />
     <Compile Include="IO\IOTest.cs" />
     <Compile Include="IO\OperationManager.cs" />
