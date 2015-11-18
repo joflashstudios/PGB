@@ -1,5 +1,4 @@
-﻿
-namespace System.IO
+﻿namespace System.IO
 {
     class SharingViolationException : IOException
     {
