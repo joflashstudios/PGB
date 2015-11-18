@@ -49,7 +49,9 @@
     <Compile Include="Core\PurgeBackupItem.cs" />
     <Compile Include="Core\UpdateBackupItem.cs" />
     <Compile Include="IO\Exceptions\SharingViolationException.cs" />
-    <Compile Include="IO\FileCopier.cs" />
+    <Compile Include="IO\Win32\Delegates.cs" />
+    <Compile Include="IO\Win32\Enums.cs" />
+    <Compile Include="IO\Win32\FileCopier.cs" />
     <Compile Include="IO\IOOperation.cs" />
     <Compile Include="IO\IOTest.cs" />
     <Compile Include="IO\OperationManager.cs" />
