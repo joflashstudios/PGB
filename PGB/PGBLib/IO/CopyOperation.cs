@@ -8,7 +8,7 @@ using System.IO;
 
 namespace PGBLib.IO
 {
-    class CopyOperation : IOOperation
+    public class CopyOperation : IOOperation
     {
         /// <summary>
         /// Whether to overwrite or throw an exception if the file already exists
@@ -33,7 +33,7 @@ namespace PGBLib.IO
         public void DoOperation(CopyProgressCallback callback)
         {
             bool cancel = false;
-            FileCopier.Copy(this.File, this.TransferDestination, ref cancel);
+            DoOperation(callback, ref cancel);
         }
 
         public virtual void DoOperation(CopyProgressCallback callback, ref bool cancel)
@@ -60,40 +60,37 @@ namespace PGBLib.IO
 
         private void CloneFoldersUp(string cloneFrom, string cloneTo)
         {
+            //For when we don't have a matching source structure
             if (string.IsNullOrEmpty(cloneFrom))
             {
-                if (Directory.Exists(GetParent(cloneTo)))
-                {
-                    Directory.CreateDirectory(cloneTo);
-                }
-                else
+                if (!Directory.Exists(GetParent(cloneTo)))
                 {
                     CloneFoldersUp(null, GetParent(cloneTo));
                 }
+                Directory.CreateDirectory(cloneTo);
                 return;
             }
             
-            if (Directory.Exists(GetParent(cloneTo)))
+            //For when we do
+            if (!Directory.Exists(GetParent(cloneTo)))
             {
-                if (Path.GetDirectoryName(cloneFrom) == Path.GetDirectoryName(cloneTo))
-                {
-                    DirectoryCloner.CloneDirectory(cloneFrom, cloneTo);
-                }
-                else
-                {
-                    Directory.CreateDirectory(cloneTo);
-                }
-            }
-            else
-            {
-                if (Path.GetDirectoryName(GetParent(cloneFrom)) == Path.GetDirectoryName(GetParent(cloneTo)))
+                if (Path.GetFileName(GetParent(cloneFrom)) == Path.GetFileName(GetParent(cloneTo)))
                 {
                     CloneFoldersUp(GetParent(cloneFrom), GetParent(cloneTo));
                 }
                 else
                 {
                     CloneFoldersUp(null, GetParent(cloneTo));
-                }            
+                }                
+            }
+
+            if (Path.GetFileName(cloneFrom) == Path.GetFileName(cloneTo))
+            {
+                DirectoryCloner.CloneDirectory(cloneFrom, cloneTo);
+            }
+            else
+            {
+                Directory.CreateDirectory(cloneTo);
             }
         }
 

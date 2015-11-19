@@ -61,7 +61,6 @@
     <Compile Include="IO\Win32\Enums.cs" />
     <Compile Include="IO\Win32\FileCopier.cs" />
     <Compile Include="IO\IOOperation.cs" />
-    <Compile Include="IO\IOTest.cs" />
     <Compile Include="IO\OperationManager.cs" />
     <Compile Include="IO\OperationWorker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -17,7 +17,7 @@ namespace PGBLib.IO.Win32
     /// <summary>
     /// Returned from file copy progress callbacks to tell windows what to do next
     /// </summary>
-    internal enum CopyProgressResult : uint
+    public enum CopyProgressResult : uint
     {
         PROGRESS_CONTINUE = 0,
         PROGRESS_CANCEL = 1,

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PGBLib.IO
 {
-    abstract class IOOperation
+    public abstract class IOOperation
     {
         /// <summary>
         /// The file to operate on

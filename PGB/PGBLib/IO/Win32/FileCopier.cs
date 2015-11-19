@@ -40,7 +40,7 @@ namespace PGBLib.IO.Win32
         /// <param name="cancel">A reference to a cancelation flag. If set to false during operation, the copy will cancel.</param>
         internal static void Copy(string source, string destination, ref bool cancel)
         {
-            Copy(source, destination, ref cancel, new CopyProgressCallback((total, transferred, reason, sourceFile, destinationFile) => {
+            Copy(source, destination, ref cancel, new CopyProgressCallback((total, transferred, sourceFile, destinationFile) => {
                 return CopyProgressResult.PROGRESS_CONTINUE;
             }));
         }
@@ -75,7 +75,7 @@ namespace PGBLib.IO.Win32
                     CopyProgressRoutine routine = (total, transferred, streamSize, StreamByteTrans, dwStreamNumber, reason, hSourceFile, hDestinationFile, lpData) => {
                         if (progressHandler != null)
                         {
-                            return progressHandler(total, transferred, reason, source, destination);
+                            return progressHandler(total, transferred, source, destination);
                         }
                         return CopyProgressResult.PROGRESS_CONTINUE;
                     };
