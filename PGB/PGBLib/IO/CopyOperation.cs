@@ -58,67 +58,46 @@ namespace PGBLib.IO
             FileCopier.Copy(File, TransferDestination, ref cancel, callback, flags);
         }        
 
-        protected void CreateFoldersForCopy()
-        {
-            /*
-            Does the destination exist?
-            Yes: Copy the file
-            No:
-                Does the parent of the destination exist?
-                Yes:
-                    Does the parent's name match the source's parent's name?
-                    Yes: Clone the directory, proceed down
-                    No: Create the directory, proceed down
-                No:
-                    Up one level
-            */
-        }
-
         private void CloneFoldersUp(string cloneFrom, string cloneTo)
         {
-            if (!string.IsNullOrEmpty(cloneFrom))
-            {
-                string sourceName = Path.GetDirectoryName(cloneFrom);
-                string destName = Path.GetDirectoryName(cloneTo);
-
-                if (Directory.Exists(GetParent(cloneTo)))
-                {
-                    if (sourceName == destName)
-                    {
-                        DirectoryCloner.CloneDirectory(cloneFrom, cloneTo);
-                    }
-                    else
-                    {
-                        Directory.CreateDirectory(cloneTo);
-                    }
-                }
-                else
-                {
-                    string pSourceName = Path.GetDirectoryName(GetParent(cloneFrom));
-                    string pDestName = Path.GetDirectoryName(GetParent(cloneTo));
-                    if (pSourceName == pDestName)
-                    {
-                        CloneFoldersUp(GetParent(cloneFrom), GetParent(cloneTo));
-                    }
-                    else
-                    {
-                        CloneFoldersUp(null, GetParent(cloneTo));
-                    }
-                }
-            }
-            else
+            if (string.IsNullOrEmpty(cloneFrom))
             {
                 if (Directory.Exists(GetParent(cloneTo)))
-                {                    
+                {
                     Directory.CreateDirectory(cloneTo);
                 }
                 else
                 {
                     CloneFoldersUp(null, GetParent(cloneTo));
                 }
+                return;
+            }
+            
+            if (Directory.Exists(GetParent(cloneTo)))
+            {
+                if (Path.GetDirectoryName(cloneFrom) == Path.GetDirectoryName(cloneTo))
+                {
+                    DirectoryCloner.CloneDirectory(cloneFrom, cloneTo);
+                }
+                else
+                {
+                    Directory.CreateDirectory(cloneTo);
+                }
+            }
+            else
+            {
+                if (Path.GetDirectoryName(GetParent(cloneFrom)) == Path.GetDirectoryName(GetParent(cloneTo)))
+                {
+                    CloneFoldersUp(GetParent(cloneFrom), GetParent(cloneTo));
+                }
+                else
+                {
+                    CloneFoldersUp(null, GetParent(cloneTo));
+                }            
             }
         }
 
+        //NOTE: I'm concerned this isn't robust enough.
         private string GetParent(string path)
         {
             return path.Substring(0, path.LastIndexOf('\\'));
