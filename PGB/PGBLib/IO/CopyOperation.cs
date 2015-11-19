@@ -43,7 +43,7 @@ namespace PGBLib.IO
             {
                 if (CreateFolder)
                 {
-                    CloneFoldersUp(Path.GetDirectoryName(File), transferDirectory);
+                    CreateDirectoryTree(Path.GetDirectoryName(File), transferDirectory);
                 }
                 else
                 {
@@ -58,40 +58,36 @@ namespace PGBLib.IO
             FileCopier.Copy(File, TransferDestination, ref cancel, callback, flags);
         }        
 
-        private void CloneFoldersUp(string cloneFrom, string cloneTo)
+        private void CreateDirectoryTree(string bottomTemplateDirectory, string bottomDirectory)
         {
-            //For when we don't have a matching source structure
-            if (string.IsNullOrEmpty(cloneFrom))
+            //For when we don't have a matching source structure:
+            if (string.IsNullOrEmpty(bottomTemplateDirectory))
             {
-                if (!Directory.Exists(GetParent(cloneTo)))
+                //Creating the parent directory if needed
+                if (!Directory.Exists(GetParent(bottomDirectory)))
                 {
-                    CloneFoldersUp(null, GetParent(cloneTo));
+                    CreateDirectoryTree(null, GetParent(bottomDirectory));
                 }
-                Directory.CreateDirectory(cloneTo);
+                //Creating the current directory
+                Directory.CreateDirectory(bottomDirectory);
                 return;
             }
             
-            //For when we do
-            if (!Directory.Exists(GetParent(cloneTo)))
+            //For when we do have a matching source structure:
+            //Creating the parent directory if needed
+            if (!Directory.Exists(GetParent(bottomDirectory)))
             {
-                if (Path.GetFileName(GetParent(cloneFrom)) == Path.GetFileName(GetParent(cloneTo)))
+                if (Path.GetFileName(GetParent(bottomTemplateDirectory)) == Path.GetFileName(GetParent(bottomDirectory))) //do the parent names match?
                 {
-                    CloneFoldersUp(GetParent(cloneFrom), GetParent(cloneTo));
+                    CreateDirectoryTree(GetParent(bottomTemplateDirectory), GetParent(bottomDirectory));
                 }
-                else
+                else //Switch off cloning for the remainder of the directory tree - we ran into something that didn't match.
                 {
-                    CloneFoldersUp(null, GetParent(cloneTo));
+                    CreateDirectoryTree(null, GetParent(bottomDirectory));
                 }                
             }
-
-            if (Path.GetFileName(cloneFrom) == Path.GetFileName(cloneTo))
-            {
-                DirectoryCloner.CloneDirectory(cloneFrom, cloneTo);
-            }
-            else
-            {
-                Directory.CreateDirectory(cloneTo);
-            }
+            //Creating the current directory
+            DirectoryCloner.CloneDirectory(bottomTemplateDirectory, bottomDirectory);
         }
 
         //NOTE: I'm concerned this isn't robust enough.
