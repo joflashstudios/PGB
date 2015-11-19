@@ -7,6 +7,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.IO;
+using System.Security.Permissions;
 
 namespace PGBLib.IO.Win32
 {
@@ -60,12 +61,13 @@ namespace PGBLib.IO.Win32
         /// Copies the specified file to the specified destination path
         /// </summary>
         /// <param name="source">The file to copy</param>
-        /// <param name="destination">The full path and file name to copy the file to</param>
+        /// <param name="destination">The path and file name to copy the file to</param>
         /// <param name="cancel">A reference to a cancelation flag. If set to false during operation, the copy will cancel.</param>
         /// <param name="progressHandler">A <see cref="CopyProgressCallback"/> to report progress to</param>
         /// <param name="flags">A <see cref="CopyFileFlags"/> indicating copy options</param>
         internal static void Copy(string source, string destination, ref bool cancel, CopyProgressCallback progressHandler, CopyFileFlags flags)
         {
+            source = Path.GetFullPath(source); destination = Path.GetFullPath(destination);
             unsafe
             {
                 fixed (Boolean* cancelp = &cancel)
@@ -77,8 +79,8 @@ namespace PGBLib.IO.Win32
                         }
                         return CopyProgressResult.PROGRESS_CONTINUE;
                     };
-
-                    if(!CopyFileEx(source, destination, routine, IntPtr.Zero, cancelp, flags))
+                    
+                    if (!CopyFileEx(source, destination, routine, IntPtr.Zero, cancelp, flags))
                     {
                         HandleCopyExError(source, destination, Marshal.GetLastWin32Error());
                     }

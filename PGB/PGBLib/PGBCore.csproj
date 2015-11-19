@@ -48,6 +48,7 @@
     <Compile Include="Core\Incremental\IncrementalBackupItemStep.cs" />
     <Compile Include="Core\PurgeBackupItem.cs" />
     <Compile Include="Core\UpdateBackupItem.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IO\CopyOperation.cs" />
     <Compile Include="IO\DeleteOperation.cs" />
     <Compile Include="IO\Exceptions\DirectoryAlreadyExistsException.cs" />
