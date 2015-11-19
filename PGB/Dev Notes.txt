@@ -21,3 +21,6 @@ Regarding progress as reported by OperationManager - just report bytes moved / b
 There are two ways the OperationManager can work:
 One queue, feeding the next file into the first available OperationWorker, probably with n threads where n is the number of CPU cores.
 One queue per source:destination drive combination. x threads per queue. Operations are pulled off a global stack or list and loaded into the appropriate queue.
+
+Incremental restoration (or just list building) works from the bottom and crosses things off, then the next layer crossing things off, etc. This also allows deleting old backups, even key backups, assuming you make a new one. Not quiiite sure how this works for all the changes registered in the key backup though... wait, just run the backup without including the last key in your tree build for the file copy list!
+Have two comparison/searches, running across each other for incremental, storing key/values in a shared array, and skipping unnecessary comparisons. This will allow you to know deleted files for incremental.
