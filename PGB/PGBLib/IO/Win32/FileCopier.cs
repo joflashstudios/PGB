@@ -106,11 +106,6 @@ namespace PGBLib.IO.Win32
                         source,
                         win32Exception);
                     break;
-                case Win32Error.INVALID_DRIVE:
-                    error = new DriveNotFoundException(
-                        string.Format("The source or destination drive was not found when copying '{0}' to '{1}'.", source, destination),
-                        win32Exception);
-                    break;
                 case Win32Error.SHARING_VIOLATION:
                     error = new SharingViolationException(
                         string.Format("The source or destination file was in use when copying '{0}' to '{1}'.", source, destination),

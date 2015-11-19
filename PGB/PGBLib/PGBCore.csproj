@@ -49,6 +49,7 @@
     <Compile Include="Core\PurgeBackupItem.cs" />
     <Compile Include="Core\UpdateBackupItem.cs" />
     <Compile Include="IO\Exceptions\DirectoryAlreadyExistsException.cs" />
+    <Compile Include="IO\Exceptions\DiskFullException.cs" />
     <Compile Include="IO\Exceptions\SharingViolationException.cs" />
     <Compile Include="IO\Win32\Delegates.cs" />
     <Compile Include="IO\Win32\DirectoryCloner.cs" />

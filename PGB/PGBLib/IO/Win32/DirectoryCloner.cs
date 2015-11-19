@@ -49,11 +49,6 @@ namespace PGBLib.IO.Win32
                         string.Format("The path '{0}' or '{1}' could not be found.", template, target),
                         win32Exception);
                     break;
-                case Win32Error.ERROR_INVALID_DRIVE:
-                    error = new DriveNotFoundException(
-                        string.Format("The source or destination drive was not found when cloning '{0}' to '{1}'.", template, target),
-                        win32Exception);
-                    break;
                 case Win32Error.SHARING_VIOLATION:
                     error = new SharingViolationException(
                         string.Format("The source or destination file was in use when copying '{0}' to '{1}'.", template, target),

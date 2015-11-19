@@ -42,7 +42,6 @@ namespace PGBLib.IO.Win32
         FILE_NOT_FOUND = 0x2,
         PATH_NOT_FOUND = 0x3,
         ACCESS_DENIED = 0x5,
-        INVALID_DRIVE = 0xF,
         WRITE_PROTECT = 0x13,
         SHARING_VIOLATION = 0x20,
         ALREADY_EXISTS = 0xB7,
