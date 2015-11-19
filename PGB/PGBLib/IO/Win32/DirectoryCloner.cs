@@ -39,12 +39,12 @@ namespace PGBLib.IO.Win32
             Exception error;
             switch ((Win32Error)errorCode)
             {
-                case Win32Error.ERROR_ACCESS_DENIED:
+                case Win32Error.ACCESS_DENIED:
                     error = new UnauthorizedAccessException(
                         string.Format("Access was denied to clone '{0}' to '{1}'.", template, target),
                         win32Exception);
                     break;
-                case Win32Error.ERROR_PATH_NOT_FOUND:
+                case Win32Error.PATH_NOT_FOUND:
                     error = new DirectoryNotFoundException(
                         string.Format("The path '{0}' or '{1}' could not be found.", template, target),
                         win32Exception);
@@ -54,12 +54,12 @@ namespace PGBLib.IO.Win32
                         string.Format("The source or destination drive was not found when cloning '{0}' to '{1}'.", template, target),
                         win32Exception);
                     break;
-                case Win32Error.ERROR_SHARING_VIOLATION:
+                case Win32Error.SHARING_VIOLATION:
                     error = new SharingViolationException(
                         string.Format("The source or destination file was in use when copying '{0}' to '{1}'.", template, target),
                         win32Exception);
                     break;
-                case Win32Error.ERROR_ALREADY_EXISTS:
+                case Win32Error.ALREADY_EXISTS:
                     error = new DirectoryAlreadyExistsException(
                         string.Format("The directory '{0}' could not be cloned to '{1}' because the target directory already exists.", template, target),
                         win32Exception);

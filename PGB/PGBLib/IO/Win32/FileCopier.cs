@@ -95,28 +95,33 @@ namespace PGBLib.IO.Win32
             Exception error;
             switch ((Win32Error)errorCode)
             {
-                case Win32Error.ERROR_ACCESS_DENIED:
+                case Win32Error.ACCESS_DENIED:
                     error = new UnauthorizedAccessException(
                         string.Format("Access was denied to copy '{0}' to '{1}'.", source, destination),
                         win32Exception);
                     break;
-                case Win32Error.ERROR_FILE_NOT_FOUND | Win32Error.ERROR_PATH_NOT_FOUND:
+                case Win32Error.FILE_NOT_FOUND | Win32Error.PATH_NOT_FOUND:
                     error = new FileNotFoundException(
                         string.Format("The file '{0}' could not be found.", source),
                         source,
                         win32Exception);
                     break;
-                case Win32Error.ERROR_INVALID_DRIVE:
+                case Win32Error.INVALID_DRIVE:
                     error = new DriveNotFoundException(
                         string.Format("The source or destination drive was not found when copying '{0}' to '{1}'.", source, destination),
                         win32Exception);
                     break;
-                case Win32Error.ERROR_SHARING_VIOLATION:
+                case Win32Error.SHARING_VIOLATION:
                     error = new SharingViolationException(
                         string.Format("The source or destination file was in use when copying '{0}' to '{1}'.", source, destination),
                         win32Exception);
                     break;
-                case Win32Error.ERROR_REQUEST_ABORTED:
+                case Win32Error.DISK_FULL | Win32Error.HANDLE_DISK_FULL:
+                    error = new DiskFullException(
+                        string.Format("The destination disk for '{0}' is full.", destination),
+                        win32Exception);
+                    break;
+                case Win32Error.REQUEST_ABORTED:
                     return;
                 default:
                     error = win32Exception;

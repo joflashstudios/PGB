@@ -39,13 +39,15 @@ namespace PGBLib.IO.Win32
     /// </summary>
     internal enum Win32Error : uint
     {
-        ERROR_FILE_NOT_FOUND = 0x2,
-        ERROR_PATH_NOT_FOUND = 0x3,
-        ERROR_ACCESS_DENIED = 0x5,
-        ERROR_INVALID_DRIVE = 0xF,
-        ERROR_WRITE_PROTECT = 0x13,
-        ERROR_SHARING_VIOLATION = 0x20,
-        ERROR_ALREADY_EXISTS = 0xB7,
-        ERROR_REQUEST_ABORTED = 0x4D3
+        FILE_NOT_FOUND = 0x2,
+        PATH_NOT_FOUND = 0x3,
+        ACCESS_DENIED = 0x5,
+        INVALID_DRIVE = 0xF,
+        WRITE_PROTECT = 0x13,
+        SHARING_VIOLATION = 0x20,
+        ALREADY_EXISTS = 0xB7,
+        REQUEST_ABORTED = 0x4D3,
+        DISK_FULL = 0x70,
+        HANDLE_DISK_FULL = 0x27
     }
 }
