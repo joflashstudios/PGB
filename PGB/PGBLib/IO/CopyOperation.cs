@@ -30,7 +30,7 @@ namespace PGBLib.IO
             DoOperation(null);
         }
 
-        public void DoOperation(CopyProgressCallback callback)
+        public virtual void DoOperation(CopyProgressCallback callback)
         {
             bool cancel = false;
             DoOperation(callback, ref cancel);
@@ -55,7 +55,7 @@ namespace PGBLib.IO
             if (!this.Overwrite)
                 flags = flags | CopyFileFlags.COPY_FILE_FAIL_IF_EXISTS;
 
-            FileCopier.Copy(File, TransferDestination, ref cancel, callback, flags);
+            FileCopier.Copy(Path.GetFullPath(File), Path.GetFullPath(TransferDestination), ref cancel, callback, flags);
         }        
 
         private void CreateDirectoryTree(string bottomTemplateDirectory, string bottomDirectory)
