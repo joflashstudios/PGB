@@ -15,17 +15,9 @@ namespace PGBLib.IO
             foreach(string s in Directory.GetFiles(@"C:\testtmp", "*", SearchOption.AllDirectories))
             {
                 i++;
-                MoveOperation op = new MoveOperation();
+                DeleteOperation op = new DeleteOperation();
                 op.File = s;
-                op.CreateFolder = true;
-                if (i % 2 == 0)
-                {
-                    op.TransferDestination = @"C:\testtmp\dumpfolder\" + Path.GetFileName(s);
-                }
-                else
-                {
-                    op.TransferDestination = @"D:\testtmp\" + Path.GetFileName(s);
-                }
+                op.DeleteEmptyFolder = true;
                 op.DoOperation();
             }
         }

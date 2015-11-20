@@ -15,6 +15,11 @@ namespace PGBLib.IO
             DoOperation(null);
         }
 
+        /// <summary>
+        /// Whether to delete the folder after deleting the last file out of it on a move operation
+        /// </summary>
+        public bool DeleteEmptyFolder { get; set; }
+
         public override void DoOperation(CopyProgressCallback callback)
         {
             bool cancel = false;
@@ -35,6 +40,11 @@ namespace PGBLib.IO
             {
                 base.DoOperation(callback, ref cancel);
                 System.IO.File.Delete(File);
+            }
+
+            if (DeleteEmptyFolder && Directory.GetFileSystemEntries(Path.GetDirectoryName(File)).Length == 0)
+            {                
+                Directory.Delete(Path.GetDirectoryName(File));
             }
         }
     }

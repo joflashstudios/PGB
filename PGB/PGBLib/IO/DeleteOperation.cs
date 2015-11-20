@@ -18,7 +18,7 @@ namespace PGBLib.IO
         {
             System.IO.File.Delete(File);
             string directory = Path.GetDirectoryName(File);
-            if (Directory.GetFileSystemEntries(directory).Length == 0)
+            if (DeleteEmptyFolder && Directory.GetFileSystemEntries(directory).Length == 0)
             {
                 Directory.Delete(directory);
             }
