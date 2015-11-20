@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace PGBLib.IO
 {
@@ -15,7 +16,12 @@ namespace PGBLib.IO
 
         public override void DoOperation()
         {
-            throw new NotImplementedException();
+            System.IO.File.Delete(File);
+            string directory = Path.GetDirectoryName(File);
+            if (Directory.GetFileSystemEntries(directory).Length == 0)
+            {
+                Directory.Delete(directory);
+            }
         }
     }
 }
