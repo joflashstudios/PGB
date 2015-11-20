@@ -7,7 +7,7 @@ using System.IO;
 
 namespace PGBLib.IO
 {
-    class RenameOperation : IOOperation
+    public class RenameOperation : IOOperation
     {
         /// <summary>
         /// The new file name to use. Should not include directory.

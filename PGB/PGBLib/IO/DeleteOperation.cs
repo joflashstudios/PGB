@@ -7,7 +7,7 @@ using System.IO;
 
 namespace PGBLib.IO
 {
-    class DeleteOperation : IOOperation
+    public class DeleteOperation : IOOperation
     {
         /// <summary>
         /// Whether to delete the folder after deleting the last file out of it on a delete operation

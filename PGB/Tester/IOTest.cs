@@ -3,24 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
-namespace PGBLib.IO.Win32
+namespace PGBLib.IO
 {
     public static class IOTest
     {
         public static void RunTest()
         {
-            StringBuilder numbers = new StringBuilder();
-            Random r = new Random();
-            for (int x = 1; x < 20; x++)
+            int i = 0;
+            foreach(string s in Directory.GetFiles(@"C:\testtmp", "*", SearchOption.AllDirectories))
             {
-                numbers.Append(r.Next(1, 12589) + "\n");
-                System.Threading.Thread.Sleep(75);
-                r = new Random(r.Next(900));                
+                i++;
+                MoveOperation op = new MoveOperation();
+                op.File = s;
+                op.CreateFolder = true;
+                if (i % 2 == 0)
+                {
+                    op.TransferDestination = @"C:\testtmp\dumpfolder\" + Path.GetFileName(s);
+                }
+                else
+                {
+                    op.TransferDestination = @"D:\testtmp\" + Path.GetFileName(s);
+                }
+                op.DoOperation();
             }
-            Console.Write(numbers);
-            System.IO.File.WriteAllText("C:\\users\\elizabeth\\numbers.txt", numbers.ToString());
-            Console.ReadLine();
         }
     }
 }

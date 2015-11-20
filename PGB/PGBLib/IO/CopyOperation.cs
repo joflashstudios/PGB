@@ -38,6 +38,17 @@ namespace PGBLib.IO
 
         public virtual void DoOperation(CopyProgressCallback callback, ref bool cancel)
         {
+            PrepareDirectory();
+
+            CopyFileFlags flags = 0;
+            if (!this.Overwrite)
+                flags = flags | CopyFileFlags.COPY_FILE_FAIL_IF_EXISTS;
+
+            FileCopier.Copy(Path.GetFullPath(File), Path.GetFullPath(TransferDestination), ref cancel, callback, flags);
+        }
+
+        protected void PrepareDirectory()
+        {
             string transferDirectory = Path.GetDirectoryName(TransferDestination);
             if (!Directory.Exists(transferDirectory))
             {
@@ -50,13 +61,7 @@ namespace PGBLib.IO
                     throw new DirectoryNotFoundException(string.Format("The directory '{0}' could not be found.", transferDirectory));
                 }
             }
-
-            CopyFileFlags flags = 0;
-            if (!this.Overwrite)
-                flags = flags | CopyFileFlags.COPY_FILE_FAIL_IF_EXISTS;
-
-            FileCopier.Copy(Path.GetFullPath(File), Path.GetFullPath(TransferDestination), ref cancel, callback, flags);
-        }        
+        }
 
         private void CreateDirectoryTree(string bottomTemplateDirectory, string bottomDirectory)
         {
@@ -87,7 +92,14 @@ namespace PGBLib.IO
                 }                
             }
             //Creating the current directory
-            DirectoryCloner.CloneDirectory(bottomTemplateDirectory, bottomDirectory);
+            if (Path.GetFileName(bottomTemplateDirectory) == Path.GetDirectoryName(bottomDirectory))
+            {
+                DirectoryCloner.CloneDirectory(bottomTemplateDirectory, bottomDirectory);
+            }
+            else
+            {
+                Directory.CreateDirectory(bottomDirectory);
+            }
         }
 
         //NOTE: I'm concerned this isn't robust enough.

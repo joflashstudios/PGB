@@ -8,7 +8,7 @@ using PGBLib.IO.Win32;
 
 namespace PGBLib.IO
 {
-    class MoveOperation : CopyOperation
+    public class MoveOperation : CopyOperation
     {
         public override void DoOperation()
         {
@@ -28,6 +28,7 @@ namespace PGBLib.IO
             if (Path.GetPathRoot(Path.GetFullPath(File)) ==
                 Path.GetPathRoot(Path.GetFullPath(TransferDestination)))
             {
+                PrepareDirectory();
                 System.IO.File.Move(File, TransferDestination);
             }
             else
