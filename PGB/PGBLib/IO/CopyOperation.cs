@@ -29,13 +29,15 @@ namespace PGBLib.IO
         {
             DoOperation(null);
         }
-
+        
+        /// <param name="callback">The callback routine to call on progress</param>
         public virtual void DoOperation(CopyProgressCallback callback)
         {
             bool cancel = false;
             DoOperation(callback, ref cancel);
         }
 
+        /// <param name="callback">The callback routine to call on progress</param>
         public virtual void DoOperation(CopyProgressCallback callback, ref bool cancel)
         {
             PrepareDirectory();

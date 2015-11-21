@@ -46,6 +46,11 @@ namespace PGBLib.IO
             }
         }
 
+        private void ProcessItem()
+        {
+
+        }
+
         public void Dispose()
         {
             _terminate = true;

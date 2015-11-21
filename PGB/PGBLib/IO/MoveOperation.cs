@@ -20,12 +20,14 @@ namespace PGBLib.IO
         /// </summary>
         public bool DeleteEmptyFolder { get; set; }
 
+        /// <param name="callback">The callback routine to call on progress</param>
         public override void DoOperation(CopyProgressCallback callback)
         {
             bool cancel = false;
             DoOperation(callback, ref cancel);
         }
 
+        /// <param name="callback">The callback routine to call on progress</param>
         public override void DoOperation(CopyProgressCallback callback, ref bool cancel)
         {
             //Moves on the same volume should be so fast we can treat them as deletes or renames,
