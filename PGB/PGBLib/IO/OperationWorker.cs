@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using PGBLib.IO.Win32;
 
 namespace PGBLib.IO
 {
@@ -37,7 +38,7 @@ namespace PGBLib.IO
 
                 if (currentOperation != null)
                 {
-                    
+                    ProcessOperation(currentOperation)
                 }
                 else //We have nothing to do. Yield our current time slice.
                 {
@@ -46,9 +47,17 @@ namespace PGBLib.IO
             }
         }
 
-        private void ProcessItem()
+        private void ProcessOperation(IOOperation operation)
         {
+            CopyOperation copyOp = operation as CopyOperation;     
+            if (copyOp != null)
+            {
+                CopyProgressCallback copyCall = new CopyProgressCallback((total, transferred, sourceFile, destinationFile) => {
 
+                    return CopyProgressResult.PROGRESS_CONTINUE;
+                })
+                copyOp.DoOperation()
+            }
         }
 
         public void Dispose()
