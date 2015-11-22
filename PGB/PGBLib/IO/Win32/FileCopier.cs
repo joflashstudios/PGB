@@ -40,9 +40,7 @@ namespace PGBLib.IO.Win32
         /// <param name="cancel">A reference to a cancelation flag. If set to false during operation, the copy will cancel.</param>
         internal static void Copy(string source, string destination, ref bool cancel)
         {
-            Copy(source, destination, ref cancel, new CopyProgressCallback((total, transferred, sourceFile, destinationFile) => {
-                return CopyProgressResult.PROGRESS_CONTINUE;
-            }));
+            Copy(source, destination, ref cancel, null);
         }
 
         /// <summary>

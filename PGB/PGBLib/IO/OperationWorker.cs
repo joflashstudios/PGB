@@ -14,6 +14,8 @@ namespace PGBLib.IO
             _workerThread = new Thread(new ThreadStart(DoWork));
         }
 
+        public event OperationProgressHandler ProgressMade;
+
         public Queue<IOOperation> OperationQueue { get; set; }
 
         private bool _terminate = false;
@@ -38,7 +40,7 @@ namespace PGBLib.IO
 
                 if (currentOperation != null)
                 {
-                    ProcessOperation(currentOperation)
+                    ProcessOperation(currentOperation);
                 }
                 else //We have nothing to do. Yield our current time slice.
                 {
@@ -49,14 +51,26 @@ namespace PGBLib.IO
 
         private void ProcessOperation(IOOperation operation)
         {
-            CopyOperation copyOp = operation as CopyOperation;     
-            if (copyOp != null)
+            try
             {
-                CopyProgressCallback copyCall = new CopyProgressCallback((total, transferred, sourceFile, destinationFile) => {
-
-                    return CopyProgressResult.PROGRESS_CONTINUE;
-                })
-                copyOp.DoOperation()
+                CopyOperation copyOp = operation as CopyOperation;
+                if (copyOp != null)
+                {
+                    CopyProgressCallback copyCall = new CopyProgressCallback((total, transferred, sourceFile, destinationFile) => {
+                        ProgressMade(this, new OperationProgressDetails(operation, transferred, total));
+                        return CopyProgressResult.PROGRESS_CONTINUE;
+                    });
+                    copyOp.DoOperation(copyCall, ref _terminate);
+                }
+                else
+                {
+                    operation.DoOperation();
+                }
+                ProgressMade(this, new OperationProgressDetails(operation, true));
+            }
+            catch (Exception e) //We're catching everything (*gasp!*) so we can bubble it up without blowing up stacks of threads.
+            {
+                ProgressMade(this, new OperationProgressDetails(operation, e));
             }
         }
 

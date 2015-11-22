@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PGBLib.IO
 {
-    class OperationProgressDetails
+    class OperationProgressDetails : EventArgs
     {        
         IOOperation Operation { get; }
         bool Completed { get; }
