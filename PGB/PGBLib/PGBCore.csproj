@@ -58,6 +58,7 @@
     <Compile Include="IO\MoveOperation.cs" />
     <Compile Include="IO\OperationProgressDetails.cs" />
     <Compile Include="IO\RenameOperation.cs" />
+    <Compile Include="IO\RootSet.cs" />
     <Compile Include="IO\Win32\Delegates.cs" />
     <Compile Include="IO\Win32\DirectoryCloner.cs" />
     <Compile Include="IO\Win32\Enums.cs" />

@@ -12,11 +12,12 @@ namespace PGBLib.IO
         public OperationWorker()
         {
             _workerThread = new Thread(new ThreadStart(DoWork));
+            OperationQueue = new Queue<IOOperation>();
         }
 
         public event OperationProgressHandler ProgressMade;
 
-        public Queue<IOOperation> OperationQueue { get; set; }
+        public Queue<IOOperation> OperationQueue { get; }
 
         private bool _terminate = false;
         private Thread _workerThread;
@@ -25,6 +26,18 @@ namespace PGBLib.IO
         public void Start()
         {
             _workerThread.Start();
+        }
+
+        /// <summary>
+        /// Enqueues an IOOperation to the Operation Queue.
+        /// This method is thread-safe.
+        /// </summary>
+        public void EnqueueOperation(IOOperation op)
+        {
+            lock (OperationQueue)
+            {
+                OperationQueue.Enqueue(op);
+            }
         }
 
         private void DoWork()
@@ -83,6 +96,5 @@ namespace PGBLib.IO
         {
             Dispose();
         }
-        //public List<IOOperation> CompletedOperations { get; set; } //What's the best way to get this information to the OperationManager? Maybe actually use a WorkerProgress event.... yeah.
     }
 }
