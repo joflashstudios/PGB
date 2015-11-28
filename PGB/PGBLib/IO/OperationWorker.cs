@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using PGBLib.IO.Win32;
+using System.IO;
 
 namespace PGBLib.IO
 {
@@ -19,6 +20,9 @@ namespace PGBLib.IO
 
         public Queue<IOOperation> OperationQueue { get; }
 
+        public long CopyBytesPending { get { return _CopyBytesPending; } }
+
+        private long _CopyBytesPending = 0;
         private bool _terminate = false;
         private Thread _workerThread;
         public Thread WorkerThread { get { return _workerThread; } }
@@ -37,6 +41,14 @@ namespace PGBLib.IO
             lock (OperationQueue)
             {
                 OperationQueue.Enqueue(op);
+            }
+
+            if (op is CopyOperation)
+            {
+                if (File.Exists(op.FileName))
+                {
+                    _CopyBytesPending += new FileInfo(op.FileName).Length;
+                }
             }
         }
 
@@ -84,6 +96,13 @@ namespace PGBLib.IO
             catch (Exception e) //We're catching everything (*gasp!*) so we can bubble it up without blowing up stacks of threads.
             {
                 ProgressMade(this, new OperationProgressDetails(operation, e));
+            }
+            finally
+            {
+                if (operation is CopyOperation)
+                {
+                    _CopyBytesPending -= operation.FileSize;
+                }
             }
         }
 

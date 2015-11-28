@@ -16,7 +16,7 @@ namespace PGBLib.IO
             {
                 i++;
                 DeleteOperation op = new DeleteOperation();
-                op.File = s;
+                op.FileName = s;
                 op.DeleteEmptyFolder = true;
                 op.DoOperation();
             }

@@ -16,8 +16,8 @@ namespace PGBLib.IO
 
         public override void DoOperation()
         {
-            System.IO.File.Delete(File);
-            string directory = Path.GetDirectoryName(File);
+            System.IO.File.Delete(FileName);
+            string directory = Path.GetDirectoryName(FileName);
             if (DeleteEmptyFolder && Directory.GetFileSystemEntries(directory).Length == 0)
             {
                 Directory.Delete(directory);

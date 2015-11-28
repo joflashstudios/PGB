@@ -46,7 +46,7 @@ namespace PGBLib.IO
             if (!this.Overwrite)
                 flags = flags | CopyFileFlags.COPY_FILE_FAIL_IF_EXISTS;
 
-            FileCopier.Copy(Path.GetFullPath(File), Path.GetFullPath(TransferDestination), ref cancel, callback, flags);
+            FileCopier.Copy(Path.GetFullPath(FileName), Path.GetFullPath(TransferDestination), ref cancel, callback, flags);
         }
 
         protected void PrepareDirectory()
@@ -56,7 +56,7 @@ namespace PGBLib.IO
             {
                 if (CreateFolder)
                 {
-                    CreateDirectoryTree(Path.GetDirectoryName(File), transferDirectory);
+                    CreateDirectoryTree(Path.GetDirectoryName(FileName), transferDirectory);
                 }
                 else
                 {

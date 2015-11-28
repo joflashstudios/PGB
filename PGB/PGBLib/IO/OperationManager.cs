@@ -18,7 +18,7 @@ namespace PGBLib.IO
 
         public void AddOperation(IOOperation op)
         {
-            string root = Path.GetPathRoot(op.File);
+            string root = Path.GetPathRoot(op.FileName);
             string destinationRoot = "";
             if (op is CopyOperation)
             {

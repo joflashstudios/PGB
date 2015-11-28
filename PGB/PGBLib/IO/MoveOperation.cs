@@ -32,21 +32,21 @@ namespace PGBLib.IO
         {
             //Moves on the same volume should be so fast we can treat them as deletes or renames,
             //no progress needed. On other volumes, just fake the move and use the copy system.
-            if (Path.GetPathRoot(Path.GetFullPath(File)) ==
+            if (Path.GetPathRoot(Path.GetFullPath(FileName)) ==
                 Path.GetPathRoot(Path.GetFullPath(TransferDestination)))
             {
                 PrepareDirectory();
-                System.IO.File.Move(File, TransferDestination);
+                System.IO.File.Move(FileName, TransferDestination);
             }
             else
             {
                 base.DoOperation(callback, ref cancel);
-                System.IO.File.Delete(File);
+                System.IO.File.Delete(FileName);
             }
 
-            if (DeleteEmptyFolder && Directory.GetFileSystemEntries(Path.GetDirectoryName(File)).Length == 0)
+            if (DeleteEmptyFolder && Directory.GetFileSystemEntries(Path.GetDirectoryName(FileName)).Length == 0)
             {                
-                Directory.Delete(Path.GetDirectoryName(File));
+                Directory.Delete(Path.GetDirectoryName(FileName));
             }
         }
     }
