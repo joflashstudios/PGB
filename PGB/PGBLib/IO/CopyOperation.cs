@@ -20,6 +20,18 @@ namespace PGBLib.IO
         /// </summary>        
         public bool CreateFolder { get; set; }
 
+        public override long EffectiveFileSize
+        {
+            get
+            {
+                if (_EffectiveFileSize == -1)
+                    _EffectiveFileSize = new FileInfo(FileName).Length;
+                return _EffectiveFileSize;
+            }
+        }
+
+        protected long _EffectiveFileSize = -1;
+
         /// <summary>
         /// The destination (if any) to move/copy the file to
         /// </summary>

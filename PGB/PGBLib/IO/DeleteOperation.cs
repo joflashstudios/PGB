@@ -14,6 +14,14 @@ namespace PGBLib.IO
         /// </summary>
         public bool DeleteEmptyFolder { get; set; }
 
+        public override long EffectiveFileSize
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
         public override void DoOperation()
         {
             System.IO.File.Delete(FileName);

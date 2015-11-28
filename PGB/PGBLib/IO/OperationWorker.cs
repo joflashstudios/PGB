@@ -20,6 +20,9 @@ namespace PGBLib.IO
 
         private Queue<IOOperation> OperationQueue { get; }
 
+        /// <summary>
+        /// Represents the current number of bytes in pending move or copy operations.
+        /// </summary>
         public long CopyBytesPending { get { return _CopyBytesPending; } }
 
         private long _CopyBytesPending = 0;
@@ -101,7 +104,7 @@ namespace PGBLib.IO
             {
                 if (operation is CopyOperation)
                 {
-                    _CopyBytesPending -= operation.FileSize;
+                    _CopyBytesPending -= operation.EffectiveFileSize;
                 }
             }
         }

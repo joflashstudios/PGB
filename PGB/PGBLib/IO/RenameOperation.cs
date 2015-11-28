@@ -14,6 +14,14 @@ namespace PGBLib.IO
         /// </summary>
         public string NewFileName { get; set; }
 
+        public override long EffectiveFileSize
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
         public override void DoOperation()
         {
             //TODO: not sure this is robust enough.

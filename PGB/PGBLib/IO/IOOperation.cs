@@ -19,17 +19,7 @@ namespace PGBLib.IO
         /// </summary>
         public string FileName { get; set; }
 
-        public long FileSize
-        {
-            get
-            {
-                if (_FileSize == -1)
-                    _FileSize = new FileInfo(FileName).Length;
-                return _FileSize;
-            }
-        }
-
-        private long _FileSize = -1;
+        public abstract long EffectiveFileSize { get; }
 
         public abstract void DoOperation();
     }
