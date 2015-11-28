@@ -18,7 +18,7 @@ namespace PGBLib.IO
 
         public event OperationProgressHandler ProgressMade;
 
-        public Queue<IOOperation> OperationQueue { get; }
+        private Queue<IOOperation> OperationQueue { get; }
 
         public long CopyBytesPending { get { return _CopyBytesPending; } }
 
