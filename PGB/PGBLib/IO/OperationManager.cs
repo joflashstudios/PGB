@@ -12,6 +12,7 @@ namespace PGBLib.IO
         private Dictionary<RootSet, OperationWorker> _Workers;
 
         private bool _Running;
+        private bool _Stopped;
 
         public OperationManager()
         {
@@ -20,6 +21,9 @@ namespace PGBLib.IO
 
         public void Start()
         {
+            if (_Stopped)
+                throw new InvalidOperationException("This OperationManager has been stopped.");
+
             _Running = true;
             foreach(KeyValuePair<RootSet, OperationWorker> pair in _Workers)
             {
@@ -29,6 +33,8 @@ namespace PGBLib.IO
 
         public void AddOperation(IOOperation op)
         {
+            if (_Stopped)
+                throw new InvalidOperationException("This OperationManager has been stopped.");
             string root = Path.GetPathRoot(op.FileName);
             string destinationRoot = "";
             if (op is CopyOperation)
@@ -63,6 +69,16 @@ namespace PGBLib.IO
             foreach(IOOperation op in ops)
             {
                 AddOperation(op);
+            }
+        }
+
+        public void Stop()
+        {
+            _Stopped = true;
+            _Running = false;
+            foreach(KeyValuePair<RootSet, OperationWorker> set in _Workers)
+            {
+                set.Value.Terminate();
             }
         }
     }
