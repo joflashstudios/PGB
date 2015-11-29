@@ -55,10 +55,8 @@ namespace PGBLib.IO.Win32
                         win32Exception);
                     break;
                 case Win32Error.ALREADY_EXISTS:
-                    error = new DirectoryAlreadyExistsException(
-                        string.Format("The directory '{0}' could not be cloned to '{1}' because the target directory already exists.", template, target),
-                        win32Exception);
-                    break;
+                    //If the directory already exists don't worry about it.
+                    return;
                 default:
                     error = win32Exception;
                     break;
