@@ -57,6 +57,7 @@
     <Compile Include="IO\Exceptions\SharingViolationException.cs" />
     <Compile Include="IO\MoveOperation.cs" />
     <Compile Include="IO\OperationProgressDetails.cs" />
+    <Compile Include="IO\OperationState.cs" />
     <Compile Include="IO\RenameOperation.cs" />
     <Compile Include="IO\RootSet.cs" />
     <Compile Include="IO\Win32\Delegates.cs" />

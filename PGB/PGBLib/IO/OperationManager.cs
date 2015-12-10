@@ -11,41 +11,35 @@ namespace PGBLib.IO
     {
         private Dictionary<RootSet, OperationWorker> _Workers;
 
-        private bool _Running;
-        private bool _Paused;
-        private bool _Terminated;
+        public OperationState State { get { return _State; } }
+
+        private OperationState _State;
 
         public OperationManager()
         {
             _Workers = new Dictionary<RootSet, OperationWorker>();
+            _State = OperationState.Initialized;
         }
 
+        /// <summary>
+        /// Start this OperationManager, or resume from a paused state.
+        /// </summary>
         public void Start()
         {
-            if (_Terminated)
+            if (State == OperationState.Terminated)
                 throw new InvalidOperationException("This OperationManager has been terminated.");
-
-            if (!_Paused)
+            
+            foreach (KeyValuePair<RootSet, OperationWorker> pair in _Workers)
             {
-                _Running = true;
-                foreach (KeyValuePair<RootSet, OperationWorker> pair in _Workers)
-                {
-                    pair.Value.Start();
-                }
-            }
-            else
-            {
-                foreach (KeyValuePair<RootSet, OperationWorker> set in _Workers)
-                {
-                    set.Value.Start();
-                }
-            }
+                pair.Value.Start();
+            }            
         }
 
         public void AddOperation(IOOperation op)
         {
-            if (_Terminated)
+            if (State == OperationState.Terminated)
                 throw new InvalidOperationException("This OperationManager has been terminated.");
+
             string root = Path.GetPathRoot(op.FileName);
             string destinationRoot = "";
             if (op is CopyOperation)
@@ -66,11 +60,9 @@ namespace PGBLib.IO
             worker.ProgressMade += Worker_ProgressMade;
             _Workers.Add(roots, new OperationWorker());
 
-            if (_Running)
+            if (State == OperationState.Running)
             {
                 worker.Start();
-                if (_Paused)
-                    worker.Pause();
             }
         }
 
@@ -89,8 +81,7 @@ namespace PGBLib.IO
 
         public void Terminate()
         {
-            _Terminated = true;
-            _Running = false;
+            _State = OperationState.Terminated;
             foreach(KeyValuePair<RootSet, OperationWorker> set in _Workers)
             {
                 set.Value.Terminate();
@@ -99,7 +90,7 @@ namespace PGBLib.IO
 
         public void Pause()
         {
-            _Paused = true;
+            _State = OperationState.Paused;
             foreach (KeyValuePair<RootSet, OperationWorker> set in _Workers)
             {
                 set.Value.Pause();
