@@ -12,6 +12,7 @@ namespace PGBLib.IO
         private Dictionary<RootSet, OperationWorker> _Workers;
 
         private bool _Running;
+        private bool _Paused;
         private bool _Terminated;
 
         public OperationManager()
@@ -24,10 +25,20 @@ namespace PGBLib.IO
             if (_Terminated)
                 throw new InvalidOperationException("This OperationManager has been terminated.");
 
-            _Running = true;
-            foreach(KeyValuePair<RootSet, OperationWorker> pair in _Workers)
+            if (!_Paused)
             {
-                pair.Value.Start();
+                _Running = true;
+                foreach (KeyValuePair<RootSet, OperationWorker> pair in _Workers)
+                {
+                    pair.Value.Start();
+                }
+            }
+            else
+            {
+                foreach (KeyValuePair<RootSet, OperationWorker> set in _Workers)
+                {
+                    set.Value.Start();
+                }
             }
         }
 
@@ -56,7 +67,11 @@ namespace PGBLib.IO
             _Workers.Add(roots, new OperationWorker());
 
             if (_Running)
+            {
                 worker.Start();
+                if (_Paused)
+                    worker.Pause();
+            }
         }
 
         private void Worker_ProgressMade(object sender, OperationProgressDetails progress)
@@ -79,6 +94,15 @@ namespace PGBLib.IO
             foreach(KeyValuePair<RootSet, OperationWorker> set in _Workers)
             {
                 set.Value.Terminate();
+            }
+        }
+
+        public void Pause()
+        {
+            _Paused = true;
+            foreach (KeyValuePair<RootSet, OperationWorker> set in _Workers)
+            {
+                set.Value.Pause();
             }
         }
     }

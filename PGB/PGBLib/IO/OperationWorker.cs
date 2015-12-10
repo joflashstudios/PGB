@@ -26,13 +26,24 @@ namespace PGBLib.IO
         public long CopyBytesPending { get { return _CopyBytesPending; } }
 
         private long _CopyBytesPending = 0;
+        private bool _paused = false;
         private bool _terminate = false;
         private Thread _workerThread;
         public Thread WorkerThread { get { return _workerThread; } }
 
+        /// <summary>
+        /// Start the OperationWorker, or resume from a paused state.
+        /// </summary>
         public void Start()
         {
-            _workerThread.Start();
+            if (!_paused)
+            {
+                _workerThread.Start();
+            }
+            else
+            {
+                _paused = false;
+            }
         }
 
         /// <summary>
@@ -59,18 +70,25 @@ namespace PGBLib.IO
         {
             while (!_terminate)
             {
-                IOOperation currentOperation = null;
-                lock (OperationQueue)
+                if (!_paused)
                 {
-                    if (OperationQueue.Count > 0)
-                        currentOperation = OperationQueue.Dequeue();
-                }
+                    IOOperation currentOperation = null;
+                    lock (OperationQueue)
+                    {
+                        if (OperationQueue.Count > 0)
+                            currentOperation = OperationQueue.Dequeue();
+                    }
 
-                if (currentOperation != null)
-                {
-                    ProcessOperation(currentOperation);
+                    if (currentOperation != null)
+                    {
+                        ProcessOperation(currentOperation);
+                    }
+                    else //We have nothing to do. Yield our current time slice.
+                    {
+                        Thread.Sleep(0);
+                    }
                 }
-                else //We have nothing to do. Yield our current time slice.
+                else //We are paused. Yield our current time slice.
                 {
                     Thread.Sleep(0);
                 }
@@ -117,6 +135,11 @@ namespace PGBLib.IO
         public void Terminate()
         {
             Dispose();
+        }
+
+        public void Pause()
+        {
+            _paused = true;
         }
     }
 }
