@@ -48,7 +48,9 @@ namespace PGBLib.IO
             foreach (KeyValuePair<RootSet, OperationWorker> pair in _Workers)
             {
                 pair.Value.Start();
-            }            
+            }
+
+            _State = OperationState.Running;        
         }
 
         public void AddOperation(IOOperation op)
@@ -97,20 +99,20 @@ namespace PGBLib.IO
 
         public void Terminate()
         {
-            _State = OperationState.Terminated;
             foreach(KeyValuePair<RootSet, OperationWorker> set in _Workers)
             {
                 set.Value.Terminate();
             }
+            _State = OperationState.Terminated;
         }
 
         public void Pause()
         {
-            _State = OperationState.Paused;
             foreach (KeyValuePair<RootSet, OperationWorker> set in _Workers)
             {
                 set.Value.Pause();
             }
+            _State = OperationState.Paused;
         }
     }
 }

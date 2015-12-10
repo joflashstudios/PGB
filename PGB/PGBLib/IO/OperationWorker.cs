@@ -20,16 +20,22 @@ namespace PGBLib.IO
 
         private Queue<IOOperation> OperationQueue { get; }
 
+        private bool _CopyTerminateFlag = false;
+
         /// <summary>
-        /// Represents the current number of bytes in pending move or copy operations.
+        /// Gets the current number of bytes in pending or in-progress move or copy operations.
         /// </summary>
         public long CopyBytesPending { get { return _CopyBytesPending; } }
+        private long _CopyBytesPending = 0;
 
+        /// <summary>
+        /// Gets the current number of pending file operations
+        /// </summary>
         public int OperationsPending { get { return OperationQueue.Count; } }
 
-        private long _CopyBytesPending = 0;
-        private bool _paused = false;
-        private bool _terminate = false;
+        public OperationState State { get { return _State; } }
+        private OperationState _State;
+
         private Thread _workerThread;
         public Thread WorkerThread { get { return _workerThread; } }
 
@@ -38,14 +44,11 @@ namespace PGBLib.IO
         /// </summary>
         public void Start()
         {
-            if (!_paused)
+            if (State != OperationState.Paused)
             {
                 _workerThread.Start();
             }
-            else
-            {
-                _paused = false;
-            }
+            _State = OperationState.Running;
         }
 
         /// <summary>
@@ -70,9 +73,9 @@ namespace PGBLib.IO
 
         private void DoWork()
         {
-            while (!_terminate)
+            while (State != OperationState.Terminated)
             {
-                if (!_paused)
+                if (State != OperationState.Paused)
                 {
                     IOOperation currentOperation = null;
                     lock (OperationQueue)
@@ -86,14 +89,10 @@ namespace PGBLib.IO
                         ProcessOperation(currentOperation);
                     }
                     else //We have nothing to do. Yield our current time slice.
-                    {
                         Thread.Sleep(0);
-                    }
                 }
                 else //We are paused. Yield our current time slice.
-                {
                     Thread.Sleep(0);
-                }
             }
         }
 
@@ -108,7 +107,7 @@ namespace PGBLib.IO
                         ProgressMade(this, new OperationProgressDetails(operation, transferred, total));
                         return CopyProgressResult.PROGRESS_CONTINUE;
                     });
-                    copyOp.DoOperation(copyCall, ref _terminate);
+                    copyOp.DoOperation(copyCall, ref _CopyTerminateFlag);
                 }
                 else
                 {
@@ -131,7 +130,8 @@ namespace PGBLib.IO
 
         public void Dispose()
         {
-            _terminate = true;
+            _CopyTerminateFlag = true;
+            _State = OperationState.Terminated;
         }
 
         public void Terminate()
@@ -141,7 +141,7 @@ namespace PGBLib.IO
 
         public void Pause()
         {
-            _paused = true;
+            _State = OperationState.Paused;
         }
     }
 }
