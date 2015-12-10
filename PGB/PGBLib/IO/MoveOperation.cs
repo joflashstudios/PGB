@@ -26,9 +26,9 @@ namespace PGBLib.IO
             {
                 if (!IsSameVolume)
                 {
-                    if (_EffectiveFileSize == -1)
-                        _EffectiveFileSize = new FileInfo(FileName).Length;
-                    return _EffectiveFileSize;
+                    if (effectiveFileSize == -1)
+                        effectiveFileSize = new FileInfo(FileName).Length;
+                    return effectiveFileSize;
                 }
                 else
                 {

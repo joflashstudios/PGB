@@ -12,7 +12,7 @@ namespace PGBLib.IO
     {
         public OperationWorker()
         {
-            _workerThread = new Thread(new ThreadStart(DoWork));
+            workerThread = new Thread(new ThreadStart(DoWork));
             OperationQueue = new Queue<IOOperation>();
         }
 
@@ -20,24 +20,24 @@ namespace PGBLib.IO
 
         private Queue<IOOperation> OperationQueue { get; }
 
-        private bool _CopyTerminateFlag = false;
+        private bool copyTerminateFlag = false;
 
         /// <summary>
         /// Gets the current number of bytes in pending or in-progress move or copy operations.
         /// </summary>
-        public long CopyBytesPending { get { return _CopyBytesPending; } }
-        private long _CopyBytesPending = 0;
+        public long CopyBytesPending { get { return copyBytesPending; } }
+        private long copyBytesPending = 0;
 
         /// <summary>
         /// Gets the current number of pending file operations
         /// </summary>
         public int OperationsPending { get { return OperationQueue.Count; } }
 
-        public OperationState State { get { return _State; } }
-        private OperationState _State;
+        public OperationState State { get { return state; } }
+        private OperationState state;
 
-        private Thread _workerThread;
-        public Thread WorkerThread { get { return _workerThread; } }
+        private Thread workerThread;
+        public Thread WorkerThread { get { return workerThread; } }
 
         /// <summary>
         /// Start the OperationWorker, or resume from a paused state.
@@ -46,9 +46,9 @@ namespace PGBLib.IO
         {
             if (State != OperationState.Paused)
             {
-                _workerThread.Start();
+                workerThread.Start();
             }
-            _State = OperationState.Running;
+            state = OperationState.Running;
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace PGBLib.IO
             {
                 if (File.Exists(op.FileName))
                 {
-                    _CopyBytesPending += new FileInfo(op.FileName).Length;
+                    copyBytesPending += new FileInfo(op.FileName).Length;
                 }
             }
         }
@@ -107,7 +107,7 @@ namespace PGBLib.IO
                         ProgressMade(this, new OperationProgressDetails(operation, transferred, total));
                         return CopyProgressResult.PROGRESS_CONTINUE;
                     });
-                    copyOp.DoOperation(copyCall, ref _CopyTerminateFlag);
+                    copyOp.DoOperation(copyCall, ref copyTerminateFlag);
                 }
                 else
                 {
@@ -123,15 +123,15 @@ namespace PGBLib.IO
             {
                 if (operation is CopyOperation)
                 {
-                    _CopyBytesPending -= operation.EffectiveFileSize;
+                    copyBytesPending -= operation.EffectiveFileSize;
                 }
             }
         }
 
         public void Dispose()
         {
-            _CopyTerminateFlag = true;
-            _State = OperationState.Terminated;
+            copyTerminateFlag = true;
+            state = OperationState.Terminated;
         }
 
         public void Terminate()
@@ -141,7 +141,7 @@ namespace PGBLib.IO
 
         public void Pause()
         {
-            _State = OperationState.Paused;
+            state = OperationState.Paused;
         }
     }
 }

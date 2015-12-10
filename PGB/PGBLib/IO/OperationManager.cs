@@ -9,17 +9,17 @@ namespace PGBLib.IO
 {
     class OperationManager
     {
-        private Dictionary<RootSet, OperationWorker> _Workers;
+        private Dictionary<RootSet, OperationWorker> workers;
 
-        public OperationState State { get { return _State; } }
+        public OperationState State { get { return state; } }
 
-        private OperationState _State;
+        private OperationState state;
 
         public long BytesPending
         {
             get
             {
-                return _Workers.Sum(n => n.Value.CopyBytesPending);
+                return workers.Sum(n => n.Value.CopyBytesPending);
             }
         }
 
@@ -27,14 +27,14 @@ namespace PGBLib.IO
         {
             get
             {
-                return _Workers.Sum(n => n.Value.OperationsPending);
+                return workers.Sum(n => n.Value.OperationsPending);
             }
         }
 
         public OperationManager()
         {
-            _Workers = new Dictionary<RootSet, OperationWorker>();
-            _State = OperationState.Initialized;
+            workers = new Dictionary<RootSet, OperationWorker>();
+            state = OperationState.Initialized;
         }
 
         /// <summary>
@@ -45,12 +45,12 @@ namespace PGBLib.IO
             if (State == OperationState.Terminated)
                 throw new InvalidOperationException("This OperationManager has been terminated.");
             
-            foreach (KeyValuePair<RootSet, OperationWorker> pair in _Workers)
+            foreach (KeyValuePair<RootSet, OperationWorker> pair in workers)
             {
                 pair.Value.Start();
             }
 
-            _State = OperationState.Running;        
+            state = OperationState.Running;        
         }
 
         public void AddOperation(IOOperation op)
@@ -66,17 +66,17 @@ namespace PGBLib.IO
             }
             RootSet roots = new RootSet(root, destinationRoot);
 
-            if (!_Workers.ContainsKey(roots))
+            if (!workers.ContainsKey(roots))
                 RegisterWorker(roots);
 
-            _Workers[roots].EnqueueOperation(op);
+            workers[roots].EnqueueOperation(op);
         }
 
         private void RegisterWorker(RootSet roots)
         {
             OperationWorker worker = new OperationWorker();
             worker.ProgressMade += Worker_ProgressMade;
-            _Workers.Add(roots, new OperationWorker());
+            workers.Add(roots, new OperationWorker());
 
             if (State == OperationState.Running)
             {
@@ -99,20 +99,20 @@ namespace PGBLib.IO
 
         public void Terminate()
         {
-            foreach(KeyValuePair<RootSet, OperationWorker> set in _Workers)
+            foreach(KeyValuePair<RootSet, OperationWorker> set in workers)
             {
                 set.Value.Terminate();
             }
-            _State = OperationState.Terminated;
+            state = OperationState.Terminated;
         }
 
         public void Pause()
         {
-            foreach (KeyValuePair<RootSet, OperationWorker> set in _Workers)
+            foreach (KeyValuePair<RootSet, OperationWorker> set in workers)
             {
                 set.Value.Pause();
             }
-            _State = OperationState.Paused;
+            state = OperationState.Paused;
         }
     }
 }

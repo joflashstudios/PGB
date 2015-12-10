@@ -24,13 +24,13 @@ namespace PGBLib.IO
         {
             get
             {
-                if (_EffectiveFileSize == -1)
-                    _EffectiveFileSize = new FileInfo(FileName).Length;
-                return _EffectiveFileSize;
+                if (effectiveFileSize == -1)
+                    effectiveFileSize = new FileInfo(FileName).Length;
+                return effectiveFileSize;
             }
         }
 
-        protected long _EffectiveFileSize = -1;
+        protected long effectiveFileSize = -1;
 
         /// <summary>
         /// The destination (if any) to move/copy the file to
