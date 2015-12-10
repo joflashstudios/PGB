@@ -15,6 +15,22 @@ namespace PGBLib.IO
 
         private OperationState _State;
 
+        public long BytesPending
+        {
+            get
+            {
+                return _Workers.Sum(n => n.Value.CopyBytesPending);
+            }
+        }
+
+        public int OperationsPending
+        {
+            get
+            {
+                return _Workers.Sum(n => n.Value.OperationsPending);
+            }
+        }
+
         public OperationManager()
         {
             _Workers = new Dictionary<RootSet, OperationWorker>();

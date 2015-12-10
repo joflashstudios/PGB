@@ -25,6 +25,8 @@ namespace PGBLib.IO
         /// </summary>
         public long CopyBytesPending { get { return _CopyBytesPending; } }
 
+        public int OperationsPending { get { return OperationQueue.Count; } }
+
         private long _CopyBytesPending = 0;
         private bool _paused = false;
         private bool _terminate = false;
