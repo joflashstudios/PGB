@@ -54,7 +54,7 @@ namespace PGBLib.IO
         {
             PrepareDirectory();
 
-            CopyFileFlags flags = 0;
+            CopyFileFlags flags = CopyFileFlags.COPY_FILE_ALLOW_DECRYPTED_DESTINATION;
             if (!this.Overwrite)
                 flags = flags | CopyFileFlags.COPY_FILE_FAIL_IF_EXISTS;
 
