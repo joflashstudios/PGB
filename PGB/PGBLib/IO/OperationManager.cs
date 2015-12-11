@@ -11,6 +11,26 @@ namespace PGBLib.IO
     /// </summary>
     class OperationManager
     {
+        public event OperationProgressHandler ProgressMade
+        {
+            add
+            {
+                lock (eventLock)
+                {
+                    progressHandler += value;
+                }
+            }
+            remove
+            {
+                lock (eventLock)
+                {
+                    progressHandler -= value;
+                }
+            }
+        }
+        private readonly object eventLock = new object();
+        private OperationProgressHandler progressHandler;
+
         public long BytesPending
         {
             get
@@ -42,9 +62,7 @@ namespace PGBLib.IO
 
         public OperationState State { get { return state; } }
         private OperationState state;
-
-        public event OperationProgressHandler ProgressMade;
-
+        
         private Dictionary<RootSet, OperationWorker> workers;
 
         private int threadsPerWorker = 1;
@@ -127,7 +145,20 @@ namespace PGBLib.IO
 
         private void Worker_ProgressMade(object sender, OperationProgressDetails progress)
         {
-            throw new NotImplementedException();
+            OnProgress(progress);
+        }
+
+        private void OnProgress(OperationProgressDetails details)
+        {
+            OperationProgressHandler handler;
+            lock (eventLock)
+            {
+                handler = progressHandler;
+            }
+            if (handler != null)
+            {
+                handler(this, details);
+            }
         }
     }
 }
