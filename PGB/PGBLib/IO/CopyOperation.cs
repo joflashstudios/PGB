@@ -25,7 +25,12 @@ namespace PGBLib.IO
             get
             {
                 if (effectiveFileSize == -1)
-                    effectiveFileSize = new FileInfo(FileName).Length;
+                {
+                    if (File.Exists(FileName))
+                        effectiveFileSize = new FileInfo(FileName).Length;
+                    else
+                        return 0; //The file doesn't exist, return 0, and check again next time the property is accessed for the real value.
+                }
                 return effectiveFileSize;
             }
         }

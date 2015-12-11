@@ -76,14 +76,9 @@ namespace PGBLib.IO
             {
                 OperationQueue.Enqueue(op);
             }
-
-            if (op is CopyOperation)
-            {
-                if (File.Exists(op.FileName))
-                {
-                    copyBytesPending += op.EffectiveFileSize;
-                }
-            }
+            
+            //Polymorphism FTW.
+            copyBytesPending += op.EffectiveFileSize;
         }
 
         private void DoWork()
