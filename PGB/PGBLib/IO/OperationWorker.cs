@@ -7,13 +7,17 @@ namespace PGBLib.IO
 {
     internal class OperationWorker : IDisposable
     {
-        public OperationWorker()
+        public OperationWorker(int workerCount)
         {
-            workerThread = new Thread(new ThreadStart(DoWork));
-            OperationQueue = new Queue<IOOperation>();
+            operationQueue = new Queue<IOOperation>();
+            for (int i = 0; i < workerCount; i++)
+            {
+                workerThreads[i] = new Thread(new ThreadStart(DoWork));
+            }
         }
 
         private readonly object eventLock = new object();
+        private readonly object statLock = new object();
         private OperationProgressHandler progressHandler;
         public event OperationProgressHandler ProgressMade
         {
@@ -33,7 +37,7 @@ namespace PGBLib.IO
             }
         }
 
-        private Queue<IOOperation> OperationQueue { get; }
+        private Queue<IOOperation> operationQueue { get; }
 
         private bool copyTerminateFlag = false;
 
@@ -55,7 +59,7 @@ namespace PGBLib.IO
         /// <summary>
         /// Gets the current number of pending file operations
         /// </summary>
-        public int OperationsPending { get { return OperationQueue.Count; } }
+        public int OperationsPending { get { return operationQueue.Count; } }
 
         /// <summary>
         /// Gets the current number of operations that have completed processing.
@@ -66,8 +70,8 @@ namespace PGBLib.IO
         public OperationState State { get { return state; } }
         private OperationState state;
 
-        private Thread workerThread;
-        public Thread WorkerThread { get { return workerThread; } }
+        private Thread[] workerThreads;
+        public Thread[] WorkerThreads { get { return workerThreads; } }
 
         /// <summary>
         /// Start the OperationWorker, or resume from a paused state.
@@ -76,7 +80,10 @@ namespace PGBLib.IO
         {
             if (State != OperationState.Paused)
             {
-                workerThread.Start();
+                foreach (Thread t in workerThreads)
+                {
+                    t.Start();
+                }
             }
             state = OperationState.Running;
         }
@@ -86,10 +93,13 @@ namespace PGBLib.IO
         /// </summary>
         public void EnqueueOperation(IOOperation op)
         {
-            OperationQueue.Enqueue(op);
+            operationQueue.Enqueue(op);
             
-            //Polymorphism FTW.
-            copyBytesPending += op.EffectiveFileSize;
+            lock(statLock)
+            {
+                //Polymorphism FTW.
+                copyBytesPending += op.EffectiveFileSize;
+            }
         }
 
         private void DoWork()
@@ -99,16 +109,14 @@ namespace PGBLib.IO
                 if (State != OperationState.Paused)
                 {
                     IOOperation currentOperation = null;
-                    lock (OperationQueue)
+                    lock (operationQueue)
                     {
-                        if (OperationQueue.Count > 0)
-                            currentOperation = OperationQueue.Dequeue();
+                        if (operationQueue.Count > 0)
+                            currentOperation = operationQueue.Dequeue();
                     }
 
                     if (currentOperation != null)
-                    {
                         ProcessOperation(currentOperation);
-                    }
                     else //We have nothing to do. Yield our current time slice.
                         Thread.Sleep(0);
                 }
@@ -119,13 +127,16 @@ namespace PGBLib.IO
 
         private void ProcessOperation(IOOperation operation)
         {
+            lock (statLock)
+                copyBytesPending -= operation.EffectiveFileSize;
+
             try
             {
                 //Copy operations get some special callbacks and tracking
                 CopyOperation copyOp = operation as CopyOperation;
                 if (copyOp != null)
                 {
-                    copyBytesPending -= operation.EffectiveFileSize;
+                    
                     CopyProgressCallback copyCall = new CopyProgressCallback((total, transferred, sourceFile, destinationFile) => {
                         OnProgress(new OperationProgressDetails(operation, transferred, total));
                         return CopyProgressResult.PROGRESS_CONTINUE;
@@ -146,8 +157,8 @@ namespace PGBLib.IO
             }
             finally
             {
-                if (operation is CopyOperation)
-                {   //Even if it fails, it's no longer pending. We don't want disappearing bytes.
+                lock(statLock)
+                { 
                     copyBytesCompleted += operation.EffectiveFileSize;
                     operationsProcessed += 1;
                 }

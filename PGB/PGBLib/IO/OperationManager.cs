@@ -47,6 +47,8 @@ namespace PGBLib.IO
             }
         }
 
+        private int threadsPerWorker = 1;
+
         public OperationManager()
         {
             workers = new Dictionary<RootSet, OperationWorker>();
@@ -90,9 +92,9 @@ namespace PGBLib.IO
 
         private void RegisterWorker(RootSet roots)
         {
-            OperationWorker worker = new OperationWorker();
+            OperationWorker worker = new OperationWorker(threadsPerWorker);
             worker.ProgressMade += Worker_ProgressMade;
-            workers.Add(roots, new OperationWorker());
+            workers.Add(roots, worker);
 
             if (State == OperationState.Running)
             {
