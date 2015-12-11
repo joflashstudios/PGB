@@ -13,7 +13,25 @@ namespace PGBLib.IO
             OperationQueue = new Queue<IOOperation>();
         }
 
-        public event OperationProgressHandler ProgressMade;
+        private readonly object eventLock = new object();
+        private OperationProgressHandler progressHandler;
+        public event OperationProgressHandler ProgressMade
+        {
+            add
+            {
+                lock (eventLock)
+                {
+                    progressHandler += value;
+                }
+            }
+            remove
+            {
+                lock (eventLock)
+                {
+                    progressHandler -= value;
+                }
+            }
+        }
 
         private Queue<IOOperation> OperationQueue { get; }
 
@@ -113,7 +131,7 @@ namespace PGBLib.IO
                 {
                     copyBytesPending -= operation.EffectiveFileSize;
                     CopyProgressCallback copyCall = new CopyProgressCallback((total, transferred, sourceFile, destinationFile) => {
-                        ProgressMade(this, new OperationProgressDetails(operation, transferred, total));
+                        OnProgress(new OperationProgressDetails(operation, transferred, total));
                         return CopyProgressResult.PROGRESS_CONTINUE;
                     });
                     copyOp.DoOperation(copyCall, ref copyTerminateFlag);
@@ -124,11 +142,11 @@ namespace PGBLib.IO
                 }
 
                 //Notify the caller that the operation has completed
-                ProgressMade(this, new OperationProgressDetails(operation, true));
+                OnProgress(new OperationProgressDetails(operation, true));
             }
             catch (Exception e) //We're catching everything (*gasp!*) so we can bubble it up without blowing up stacks of threads.
             {
-                ProgressMade(this, new OperationProgressDetails(operation, e));
+                OnProgress(new OperationProgressDetails(operation, e));
             }
             finally
             {
@@ -137,6 +155,19 @@ namespace PGBLib.IO
                     copyBytesCompleted += operation.EffectiveFileSize;
                     operationsProcessed += 1;
                 }
+            }
+        }
+
+        private void OnProgress(OperationProgressDetails details)
+        {
+            OperationProgressHandler handler;
+            lock (eventLock)
+            {
+                handler = progressHandler;
+            }
+            if (handler != null)
+            {
+                handler(this, details);
             }
         }
 

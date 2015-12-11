@@ -13,6 +13,8 @@ namespace PGBLib.IO
 
         private OperationState state;
 
+        public event OperationProgressHandler ProgressMade;
+
         public long BytesPending
         {
             get
