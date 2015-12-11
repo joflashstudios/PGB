@@ -17,7 +17,7 @@ namespace PGBLib.IO
         {
             get
             {
-                return workers.Sum(n => n.Value.CopyBytesPending);
+                return workers.Sum(n => n.Value.BytesPending);
             }
         }
 
@@ -26,6 +26,22 @@ namespace PGBLib.IO
             get
             {
                 return workers.Sum(n => n.Value.OperationsPending);
+            }
+        }
+
+        public long BytesProcessed
+        {
+            get
+            {
+                return workers.Sum(n => n.Value.BytesProcessed);
+            }
+        }
+
+        public int OperationsProcessed
+        {
+            get
+            {
+                return workers.Sum(n => n.Value.OperationsProcessed);
             }
         }
 

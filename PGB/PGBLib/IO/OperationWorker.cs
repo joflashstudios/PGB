@@ -23,7 +23,7 @@ namespace PGBLib.IO
         /// Gets the current number of bytes in pending move or copy operations.
         /// This figure does NOT include the bytes of incomplete in-progress operations, which is available via the ProgressMade event.
         /// </summary>
-        public long CopyBytesPending { get { return copyBytesPending; } }
+        public long BytesPending { get { return copyBytesPending; } }
         private long copyBytesPending = 0;
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace PGBLib.IO
         /// This figure does NOT include progress on in-progress operations, which is available via the ProgressMade event.
         /// Includes errored copies.
         /// </summary>
-        public long CopyBytesCompleted { get { return copyBytesCompleted; } }
+        public long BytesProcessed { get { return copyBytesCompleted; } }
         private long copyBytesCompleted = 0;
 
         /// <summary>
