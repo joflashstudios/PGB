@@ -5,16 +5,12 @@ using System.IO;
 
 namespace PGBLib.IO
 {
+    /// <summary>
+    /// A multi-threaded manager for large numbers of file operations.
+    /// Designed to support starting operation sets before they are fully built.
+    /// </summary>
     class OperationManager
     {
-        private Dictionary<RootSet, OperationWorker> workers;
-
-        public OperationState State { get { return state; } }
-
-        private OperationState state;
-
-        public event OperationProgressHandler ProgressMade;
-
         public long BytesPending
         {
             get
@@ -22,7 +18,6 @@ namespace PGBLib.IO
                 return workers.Sum(n => n.Value.BytesPending);
             }
         }
-
         public int OperationsPending
         {
             get
@@ -30,7 +25,6 @@ namespace PGBLib.IO
                 return workers.Sum(n => n.Value.OperationsPending);
             }
         }
-
         public long BytesProcessed
         {
             get
@@ -38,7 +32,6 @@ namespace PGBLib.IO
                 return workers.Sum(n => n.Value.BytesProcessed);
             }
         }
-
         public int OperationsProcessed
         {
             get
@@ -46,6 +39,13 @@ namespace PGBLib.IO
                 return workers.Sum(n => n.Value.OperationsProcessed);
             }
         }
+
+        public OperationState State { get { return state; } }
+        private OperationState state;
+
+        public event OperationProgressHandler ProgressMade;
+
+        private Dictionary<RootSet, OperationWorker> workers;
 
         private int threadsPerWorker = 1;
 
@@ -62,13 +62,29 @@ namespace PGBLib.IO
         {
             if (State == OperationState.Terminated)
                 throw new InvalidOperationException("This OperationManager has been terminated.");
-            
+
             foreach (KeyValuePair<RootSet, OperationWorker> pair in workers)
             {
                 pair.Value.Start();
             }
 
-            state = OperationState.Running;        
+            state = OperationState.Running;
+        }
+        public void Pause()
+        {
+            foreach (KeyValuePair<RootSet, OperationWorker> set in workers)
+            {
+                set.Value.Pause();
+            }
+            state = OperationState.Paused;
+        }
+        public void Terminate()
+        {
+            foreach (KeyValuePair<RootSet, OperationWorker> set in workers)
+            {
+                set.Value.Terminate();
+            }
+            state = OperationState.Terminated;
         }
 
         public void AddOperation(IOOperation op)
@@ -89,6 +105,13 @@ namespace PGBLib.IO
 
             workers[roots].EnqueueOperation(op);
         }
+        public void AddOperations(IEnumerable<IOOperation> ops)
+        {
+            foreach (IOOperation op in ops)
+            {
+                AddOperation(op);
+            }
+        }
 
         private void RegisterWorker(RootSet roots)
         {
@@ -105,32 +128,6 @@ namespace PGBLib.IO
         private void Worker_ProgressMade(object sender, OperationProgressDetails progress)
         {
             throw new NotImplementedException();
-        }
-
-        public void AddOperations(IEnumerable<IOOperation> ops)
-        {
-            foreach(IOOperation op in ops)
-            {
-                AddOperation(op);
-            }
-        }
-
-        public void Terminate()
-        {
-            foreach(KeyValuePair<RootSet, OperationWorker> set in workers)
-            {
-                set.Value.Terminate();
-            }
-            state = OperationState.Terminated;
-        }
-
-        public void Pause()
-        {
-            foreach (KeyValuePair<RootSet, OperationWorker> set in workers)
-            {
-                set.Value.Pause();
-            }
-            state = OperationState.Paused;
         }
     }
 }

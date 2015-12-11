@@ -7,18 +7,6 @@ namespace PGBLib.IO
 {
     internal class OperationWorker : IDisposable
     {
-        public OperationWorker(int workerCount)
-        {
-            operationQueue = new Queue<IOOperation>();
-            for (int i = 0; i < workerCount; i++)
-            {
-                workerThreads[i] = new Thread(new ThreadStart(DoWork));
-            }
-        }
-
-        private readonly object eventLock = new object();
-        private readonly object statLock = new object();
-        private OperationProgressHandler progressHandler;
         public event OperationProgressHandler ProgressMade
         {
             add
@@ -37,41 +25,55 @@ namespace PGBLib.IO
             }
         }
 
-        private Queue<IOOperation> operationQueue { get; }
-
-        private bool copyTerminateFlag = false;
-
-        /// <summary>
-        /// Gets the current number of bytes in pending move or copy operations.
-        /// This figure does NOT include the bytes of incomplete in-progress operations, which is available via the ProgressMade event.
-        /// </summary>
-        public long BytesPending { get { return copyBytesPending; } }
-        private long copyBytesPending = 0;
-
-        /// <summary>
-        /// Gets the current number of bytes in completed move or copy operations.
-        /// This figure does NOT include progress on in-progress operations, which is available via the ProgressMade event.
-        /// Includes errored copies.
-        /// </summary>
-        public long BytesProcessed { get { return copyBytesCompleted; } }
-        private long copyBytesCompleted = 0;
-
         /// <summary>
         /// Gets the current number of pending file operations
         /// </summary>
         public int OperationsPending { get { return operationQueue.Count; } }
-
+        /// <summary>
+        /// Gets the current number of bytes in pending move or copy operations.
+        /// </summary>
+        public long BytesPending { get { return bytesPending; } }
         /// <summary>
         /// Gets the current number of operations that have completed processing.
         /// </summary>
         public int OperationsProcessed { get { return operationsProcessed; } }
-        private int operationsProcessed = 0;
+        /// <summary>
+        /// Gets the current number of bytes in completed move or copy operations. Includes errored operations.
+        /// </summary>
+        public long BytesProcessed { get { return bytesProcessed; } }
 
         public OperationState State { get { return state; } }
+
+        public Thread[] WorkerThreads { get { return workerThreads; } }
+
+
+        private OperationProgressHandler progressHandler;
+
+        private long bytesPending = 0;
+        private int operationsProcessed = 0;
+        private long bytesProcessed = 0;
+
         private OperationState state;
 
         private Thread[] workerThreads;
-        public Thread[] WorkerThreads { get { return workerThreads; } }
+
+        private readonly object eventLock = new object();
+        private readonly object statLock = new object();
+
+        private Queue<IOOperation> operationQueue { get; }
+
+        private bool copyTerminateFlag = false;
+
+
+        public OperationWorker(int workerCount)
+        {
+            operationQueue = new Queue<IOOperation>();
+            workerThreads = new Thread[workerCount];
+            for (int i = 0; i < workerCount; i++)
+            {
+                workerThreads[i] = new Thread(new ThreadStart(DoWork));
+            }
+        }
 
         /// <summary>
         /// Start the OperationWorker, or resume from a paused state.
@@ -88,9 +90,22 @@ namespace PGBLib.IO
             state = OperationState.Running;
         }
 
-        /// <summary>
-        /// Enqueues an IOOperation to the Operation Queue.
-        /// </summary>
+        public void Terminate()
+        {
+            Dispose();
+        }
+
+        public void Pause()
+        {
+            state = OperationState.Paused;
+        }
+
+        public void Dispose()
+        {
+            copyTerminateFlag = true;
+            state = OperationState.Terminated;
+        }
+
         public void EnqueueOperation(IOOperation op)
         {
             operationQueue.Enqueue(op);
@@ -98,9 +113,10 @@ namespace PGBLib.IO
             lock(statLock)
             {
                 //Polymorphism FTW.
-                copyBytesPending += op.EffectiveFileSize;
+                bytesPending += op.EffectiveFileSize;
             }
         }
+
 
         private void DoWork()
         {
@@ -128,7 +144,7 @@ namespace PGBLib.IO
         private void ProcessOperation(IOOperation operation)
         {
             lock (statLock)
-                copyBytesPending -= operation.EffectiveFileSize;
+                bytesPending -= operation.EffectiveFileSize;
 
             try
             {
@@ -159,7 +175,7 @@ namespace PGBLib.IO
             {
                 lock(statLock)
                 { 
-                    copyBytesCompleted += operation.EffectiveFileSize;
+                    bytesProcessed += operation.EffectiveFileSize;
                     operationsProcessed += 1;
                 }
             }
@@ -176,22 +192,6 @@ namespace PGBLib.IO
             {
                 handler(this, details);
             }
-        }
-
-        public void Dispose()
-        {
-            copyTerminateFlag = true;
-            state = OperationState.Terminated;
-        }
-
-        public void Terminate()
-        {
-            Dispose();
-        }
-
-        public void Pause()
-        {
-            state = OperationState.Paused;
         }
     }
 }
