@@ -23,15 +23,30 @@ namespace PGBLib.IO
         private bool copyTerminateFlag = false;
 
         /// <summary>
-        /// Gets the current number of bytes in pending or in-progress move or copy operations.
+        /// Gets the current number of bytes in pending move or copy operations.
+        /// This figure does NOT include the bytes of incomplete in-progress operations, which is available via the ProgressMade event.
         /// </summary>
         public long CopyBytesPending { get { return copyBytesPending; } }
         private long copyBytesPending = 0;
 
         /// <summary>
+        /// Gets the current number of bytes in completed move or copy operations.
+        /// This figure does NOT include progress on in-progress operations, which is available via the ProgressMade event.
+        /// Includes errored copies.
+        /// </summary>
+        public long CopyBytesCompleted { get { return copyBytesCompleted; } }
+        private long copyBytesCompleted = 0;
+
+        /// <summary>
         /// Gets the current number of pending file operations
         /// </summary>
         public int OperationsPending { get { return OperationQueue.Count; } }
+
+        /// <summary>
+        /// Gets the current number of operations that have completed processing.
+        /// </summary>
+        public int OperationsProcessed { get { return operationsProcessed; } }
+        private int operationsProcessed = 0;
 
         public OperationState State { get { return state; } }
         private OperationState state;
@@ -66,7 +81,7 @@ namespace PGBLib.IO
             {
                 if (File.Exists(op.FileName))
                 {
-                    copyBytesPending += new FileInfo(op.FileName).Length;
+                    copyBytesPending += op.EffectiveFileSize;
                 }
             }
         }
@@ -100,9 +115,11 @@ namespace PGBLib.IO
         {
             try
             {
+                //Copy operations get some special callbacks and tracking
                 CopyOperation copyOp = operation as CopyOperation;
                 if (copyOp != null)
                 {
+                    copyBytesPending -= operation.EffectiveFileSize;
                     CopyProgressCallback copyCall = new CopyProgressCallback((total, transferred, sourceFile, destinationFile) => {
                         ProgressMade(this, new OperationProgressDetails(operation, transferred, total));
                         return CopyProgressResult.PROGRESS_CONTINUE;
@@ -113,6 +130,8 @@ namespace PGBLib.IO
                 {
                     operation.DoOperation();
                 }
+
+                //Notify the caller that the operation has completed
                 ProgressMade(this, new OperationProgressDetails(operation, true));
             }
             catch (Exception e) //We're catching everything (*gasp!*) so we can bubble it up without blowing up stacks of threads.
@@ -122,8 +141,9 @@ namespace PGBLib.IO
             finally
             {
                 if (operation is CopyOperation)
-                {
-                    copyBytesPending -= operation.EffectiveFileSize;
+                {   //Even if it fails, it's no longer pending. We don't want disappearing bytes.
+                    copyBytesCompleted += operation.EffectiveFileSize;
+                    operationsProcessed += 1;
                 }
             }
         }
