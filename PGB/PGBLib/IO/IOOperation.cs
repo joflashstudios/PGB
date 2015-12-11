@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-
-namespace PGBLib.IO
+﻿namespace PGBLib.IO
 {
     /// <summary>
     /// Represents an IOOperation, which can be fed to an OperationWorker or OperationManager.

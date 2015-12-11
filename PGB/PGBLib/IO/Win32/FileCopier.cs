@@ -7,7 +7,6 @@ using System;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.IO;
-using System.Security.Permissions;
 
 namespace PGBLib.IO.Win32
 {

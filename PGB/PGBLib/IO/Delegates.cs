@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PGBLib.IO
+﻿namespace PGBLib.IO
 {
     delegate void OperationProgressHandler(object sender, OperationProgressDetails progress);
 }
