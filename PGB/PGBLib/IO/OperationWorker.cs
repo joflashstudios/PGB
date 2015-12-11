@@ -83,14 +83,10 @@ namespace PGBLib.IO
 
         /// <summary>
         /// Enqueues an IOOperation to the Operation Queue.
-        /// This method is thread-safe.
         /// </summary>
         public void EnqueueOperation(IOOperation op)
         {
-            lock (OperationQueue)
-            {
-                OperationQueue.Enqueue(op);
-            }
+            OperationQueue.Enqueue(op);
             
             //Polymorphism FTW.
             copyBytesPending += op.EffectiveFileSize;
