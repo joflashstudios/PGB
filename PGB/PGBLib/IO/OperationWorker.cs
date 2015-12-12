@@ -199,5 +199,10 @@ namespace PGBLib.IO
                 handler(this, details);
             }
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

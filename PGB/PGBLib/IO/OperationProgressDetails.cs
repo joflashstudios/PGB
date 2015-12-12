@@ -44,6 +44,11 @@ namespace PGBLib.IO
 
             ProgressType = OperationProgressType.InProgress;
         }
+
+        public override string ToString()
+        {
+            return Operation.ToString() + " is " + ProgressType.ToString();
+        }
     }
 
     public enum OperationProgressType

@@ -119,5 +119,10 @@ namespace PGBLib.IO
         {
             return path.Substring(0, path.LastIndexOf('\\'));
         }
+
+        public override string ToString()
+        {
+            return "Copy " + FileName + " to " + TransferDestination;
+        }
     }
 }

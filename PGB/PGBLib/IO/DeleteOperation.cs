@@ -26,5 +26,10 @@ namespace PGBLib.IO
                 Directory.Delete(directory);
             }
         }
+
+        public override string ToString()
+        {
+            return "Delete " + Path.GetFileName(FileName);
+        }
     }
 }

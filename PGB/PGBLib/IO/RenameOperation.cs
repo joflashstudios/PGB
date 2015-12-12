@@ -28,5 +28,10 @@ namespace PGBLib.IO
             }
             File.Move(FileName, Path.Combine(Path.GetDirectoryName(FileName), NewFileName));
         }
+
+        public override string ToString()
+        {
+            return "Rename " + Path.GetFileName(FileName) + " to " + NewFileName;
+        }
     }
 }

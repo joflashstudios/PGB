@@ -9,7 +9,7 @@ namespace PGBLib.IO.Win32
     /// Clones directories to a new location, keeping their attributes.
     /// Does NOT copy files or subdirectories.
     /// </summary>
-    class DirectoryCloner
+    static class DirectoryCloner
     {
         // Kernal32 Calls
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]

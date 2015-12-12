@@ -1,4 +1,6 @@
-﻿namespace PGBLib.IO
+﻿using System.IO;
+
+namespace PGBLib.IO
 {
     /// <summary>
     /// Represents an IOOperation, which can be fed to an OperationWorker or OperationManager.
@@ -20,5 +22,10 @@
         public abstract long EffectiveFileSize { get; }
 
         public abstract void DoOperation();
+
+        public override string ToString()
+        {
+            return Path.GetFileName(FileName);
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace PGBLib.IO.Win32
     /// <summary>
     /// Copies individual files with progress callbacks
     /// </summary>
-    class FileCopier
+    static class FileCopier
     {
         // Kernal32 Calls
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]

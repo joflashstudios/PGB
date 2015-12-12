@@ -55,5 +55,10 @@ namespace PGBLib.IO
                 Directory.Delete(Path.GetDirectoryName(FileName));
             }
         }
+
+        public override string ToString()
+        {
+            return "Move " + FileName + " to " + TransferDestination;
+        }
     }
 }
