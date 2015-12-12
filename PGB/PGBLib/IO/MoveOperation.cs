@@ -33,16 +33,9 @@ namespace PGBLib.IO
                 return Path.GetPathRoot(Path.GetFullPath(FileName)) == Path.GetPathRoot(Path.GetFullPath(TransferDestination));
             }
         }
-
+    
         /// <param name="callback">The callback routine to call on progress</param>
-        public override void DoOperation(CopyProgressCallback callback)
-        {
-            bool cancel = false;
-            DoOperation(callback, ref cancel);
-        }
-
-        /// <param name="callback">The callback routine to call on progress</param>
-        public override void DoOperation(CopyProgressCallback callback, ref bool cancel)
+        public override void DoOperation(IOProgressCallback callback)
         {
             //Moves on the same volume should be so fast we can treat them as deletes or renames,
             //no progress needed. On other volumes, just fake the move and use the copy system.
@@ -53,7 +46,7 @@ namespace PGBLib.IO
             }
             else
             {
-                base.DoOperation(callback, ref cancel);
+                base.DoOperation(callback);
                 File.Delete(FileName);
             }
 

@@ -8,7 +8,7 @@ using System.IO;
 
 namespace PGBLib.IO
 {
-    public class CopyOperation : IOOperation
+    public class CopyOperation : OngoingOperation
     {
         /// <summary>
         /// Whether to overwrite or throw an exception if the file already exists
@@ -46,16 +46,9 @@ namespace PGBLib.IO
         {
             DoOperation(null);
         }
-        
-        /// <param name="callback">The callback routine to call on progress</param>
-        public virtual void DoOperation(CopyProgressCallback callback)
-        {
-            bool cancel = false;
-            DoOperation(callback, ref cancel);
-        }
 
         /// <param name="callback">The callback routine to call on progress</param>
-        public virtual void DoOperation(CopyProgressCallback callback, ref bool cancel)
+        public override void DoOperation(IOProgressCallback callback)
         {
             PrepareDirectory();
 
@@ -63,7 +56,7 @@ namespace PGBLib.IO
             if (!this.Overwrite)
                 flags = flags | CopyFileFlags.COPY_FILE_FAIL_IF_EXISTS;
 
-            FileCopier.Copy(Path.GetFullPath(FileName), Path.GetFullPath(TransferDestination), ref cancel, callback, flags);
+            FileCopier.Copy(Path.GetFullPath(FileName), Path.GetFullPath(TransferDestination), flags, callback);
         }
 
         protected void PrepareDirectory()

@@ -151,14 +151,19 @@ namespace PGBLib.IO
             try
             {
                 //Copy operations get some special callbacks and tracking
-                CopyOperation copyOp = operation as CopyOperation;
-                if (copyOp != null)
+                OngoingOperation progressOp = operation as OngoingOperation;
+                if (progressOp != null)
                 {                    
-                    CopyProgressCallback copyCall = new CopyProgressCallback((total, transferred, sourceFile, destinationFile) => {
+                    IOProgressCallback copyCall = new IOProgressCallback((total, transferred, sourceFile, destinationFile) => {
                         OnProgress(new OperationProgressDetails(operation, transferred, total));
-                        return CopyProgressResult.PROGRESS_CONTINUE;
+
+                        //TODO: potentially add in-file pause to this? Right now we only support one in-file operation: cancel.
+                        if (State == OperationState.Terminated)
+                            return IOProgressResult.PROGRESS_CANCEL;
+                        else
+                            return IOProgressResult.PROGRESS_CONTINUE;
                     });
-                    copyOp.DoOperation(copyCall, ref copyTerminateFlag);
+                    progressOp.DoOperation(copyCall);
                 }
                 else
                 {

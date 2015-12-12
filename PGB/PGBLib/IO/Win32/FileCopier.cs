@@ -25,10 +25,10 @@ namespace PGBLib.IO.Win32
         /// </summary>
         /// <param name="source">The file to copy</param>
         /// <param name="destination">The full path and file name to copy the file to</param>
+        /// <param name="cancel">A reference to a cancelation flag. If set to false during operation, the copy will cancel.</param>
         internal static void Copy(string source, string destination)
         {
-            bool dummycancel = false;
-            Copy(source, destination, ref dummycancel);
+            Copy(source, destination, 0);
         }
 
         /// <summary>
@@ -37,21 +37,16 @@ namespace PGBLib.IO.Win32
         /// <param name="source">The file to copy</param>
         /// <param name="destination">The full path and file name to copy the file to</param>
         /// <param name="cancel">A reference to a cancelation flag. If set to false during operation, the copy will cancel.</param>
-        internal static void Copy(string source, string destination, ref bool cancel)
+        /// <param name="progressHandler">A <see cref="IOProgressCallback"/> to report progress to</param>
+        internal static void Copy(string source, string destination, CopyFileFlags flags)
         {
-            Copy(source, destination, ref cancel, null);
+            Copy(source, destination, flags, null);
         }
 
-        /// <summary>
-        /// Copies the specified file to the specified destination path
-        /// </summary>
-        /// <param name="source">The file to copy</param>
-        /// <param name="destination">The full path and file name to copy the file to</param>
-        /// <param name="cancel">A reference to a cancelation flag. If set to false during operation, the copy will cancel.</param>
-        /// <param name="progressHandler">A <see cref="CopyProgressCallback"/> to report progress to</param>
-        internal static void Copy(string source, string destination, ref bool cancel, CopyProgressCallback progressHandler)
+        internal static void Copy(string source, string destination, CopyFileFlags flags, IOProgressCallback progressHandler)
         {
-            Copy(source, destination, ref cancel, progressHandler, 0);
+            bool dummy = false; //Cancel is handled exclusively via progressHandler
+            Copy(source, destination, flags, progressHandler, ref dummy);
         }
 
         /// <summary>
@@ -59,10 +54,9 @@ namespace PGBLib.IO.Win32
         /// </summary>
         /// <param name="source">The file to copy</param>
         /// <param name="destination">The path and file name to copy the file to</param>
-        /// <param name="cancel">A reference to a cancelation flag. If set to false during operation, the copy will cancel.</param>
-        /// <param name="progressHandler">A <see cref="CopyProgressCallback"/> to report progress to</param>
+        /// <param name="progressHandler">A <see cref="IOProgressCallback"/> to report progress to</param>
         /// <param name="flags">A <see cref="CopyFileFlags"/> indicating copy options</param>
-        internal static void Copy(string source, string destination, ref bool cancel, CopyProgressCallback progressHandler, CopyFileFlags flags)
+        private static void Copy(string source, string destination, CopyFileFlags flags, IOProgressCallback progressHandler, ref bool cancel)
         {
             source = Path.GetFullPath(source); destination = Path.GetFullPath(destination);
             unsafe
@@ -74,7 +68,7 @@ namespace PGBLib.IO.Win32
                         {
                             return progressHandler(total, transferred, source, destination);
                         }
-                        return CopyProgressResult.PROGRESS_CONTINUE;
+                        return IOProgressResult.PROGRESS_CONTINUE;
                     };
                     
                     if (!CopyFileEx(source, destination, routine, IntPtr.Zero, cancelp, flags))
