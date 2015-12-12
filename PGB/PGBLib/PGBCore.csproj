@@ -51,6 +51,7 @@
     <Compile Include="IO\CopyOperation.cs" />
     <Compile Include="IO\Delegates.cs" />
     <Compile Include="IO\DeleteOperation.cs" />
+    <Compile Include="IO\DirectoryScanner.cs" />
     <Compile Include="IO\Exceptions\DirectoryAlreadyExistsException.cs" />
     <Compile Include="IO\Exceptions\DiskFullException.cs" />
     <Compile Include="IO\Exceptions\SharingViolationException.cs" />

@@ -6,90 +6,64 @@ using System.Threading.Tasks;
 using System.IO;
 using PGBLib.IO;
 
-namespace PGBLib.IO
+namespace PGBLib.IO.Win32
 {
     public static class IOTest
     {
-        static OperationManager manager = new OperationManager(5);
-        static Dictionary<string, string> filesInProgress = new Dictionary<string, string>();
-
         public static void RunTest()
         {
-            manager.ProgressMade += Manager_ProgressMade;
 
-            int i = -1;
-            foreach (string s in Directory.GetFiles(@"D:\TestD", "*", SearchOption.AllDirectories))
+            for (int i = 0; i < 2; i++)
             {
-                IOOperation op;
-                i++;
-                IOOperation op;
-                if (i == 0)
+                DateTime now = DateTime.Now;
+                long bytes = 0;
+                long files = 0;
+                //foreach (var v in new FileEnumerable("C:\\Program Files (x86)", "*w*", SearchOption.AllDirectories))
+                //{
+                //    bytes += v.Size;
+                //    files++;
+                //}
+                TimeSpan elapsed = DateTime.Now - now;
+
+                now = DateTime.Now;
+                bytes = 0;
+                files = 0;
+                foreach (var v in new DirectoryInfo("C:\\Program Files (x86)").GetFiles("*", SearchOption.AllDirectories))
                 {
-                    DeleteOperation del = new DeleteOperation();
-                    del.DeleteEmptyFolder = true;
-                    op = del;
+                    bytes += v.Length;
+                    files++;
                 }
-                else if (i == 1)
+                elapsed = DateTime.Now - now;
+                Console.WriteLine(SizeSuffix(bytes) + " in " + files + " files in " + elapsed.TotalSeconds + " seconds (Non-perf)");
+
+                now = DateTime.Now;
+                bytes = 0;
+                files = 0;
+                foreach (var v in new DirectoryInfo("C:\\Program Files (x86)").EnumerateFiles("*", SearchOption.AllDirectories))
                 {
-                    RenameOperation ren = new RenameOperation();
-                    ren.NewFileName = Path.GetFileName(s) + "newfilename";
-                    op = ren;
+                    bytes += v.Length;
+                    files++;
                 }
-                else if (i == 2)
+                elapsed = DateTime.Now - now;
+
+                Console.WriteLine(SizeSuffix(bytes) + " in " + files + " files in " + elapsed.TotalSeconds + " seconds (enumerate)");
+
+                now = DateTime.Now;
+                bytes = 0;
+                files = 0;
+                foreach (var v in new DirectoryScanner("C:\\Program Files (x86)"))
                 {
-                    CopyOperation cop = new CopyOperation();
-                    cop.TransferDestination = s + "copiedfile";
-                    op = cop;
+                    bytes += v.Length;
+                    files++;
                 }
-                else
-                {
-                    MoveOperation mop = new MoveOperation();
-                    mop.TransferDestination = s + "movedfile";
-                    op = mop;
-                    i = 0;
-                }
-                op.FileName = s;
-                manager.AddOperation(op);
+                elapsed = DateTime.Now - now;
+
+                Console.WriteLine(SizeSuffix(bytes) + " in " + files + " files in " + elapsed.TotalSeconds + " seconds (custom enumerate)");
+                Console.WriteLine();
             }
-            manager.Start();
-        }
 
-        private static object consoleLock = new object();
-
-        private static void Manager_ProgressMade(object sender, OperationProgressDetails progress)
-        {
-            string percentOps = (((double)manager.OperationsProcessed) / (manager.OperationsProcessed + manager.OperationsPending) * 100).ToString("0.00");
-            string percentBytes = (((double)manager.BytesProcessed) / (manager.BytesProcessed + manager.BytesPending) * 100).ToString("0.00");
-
-            lock (consoleLock)
-            {
-                if (progress.ProgressType == OperationProgressType.Completed)
-                {
-                    if (filesInProgress.ContainsKey(progress.Operation.FileName))
-                    {
-                        filesInProgress.Remove(progress.Operation.FileName);
-                    }
-                }
-
-                if (progress.ProgressType == OperationProgressType.InProgress)
-                {
-                    filesInProgress[progress.Operation.FileName] = SizeSuffix(progress.BytesTransferred) + " / " + SizeSuffix(progress.BytesTotal) + " " + progress.PercentComplete + "%";
-                }
-
-                Console.Clear();
-                Console.WriteLine("Operations Complete: {0} | Operations Pending: {1}", manager.OperationsProcessed, manager.OperationsPending);
-                Console.WriteLine("Bytes Complete: {0} | Bytes Pending: {1}", SizeSuffix(manager.BytesProcessed), SizeSuffix(manager.BytesPending));
-                Console.WriteLine("{0}% Complete By Operations | {1}% Complete By Files", percentOps, percentBytes);
-                Console.WriteLine("--File Progress--");
-
-                foreach (KeyValuePair<string, string> kvp in filesInProgress)
-                {
-                    Console.WriteLine(kvp.Key);
-                    Console.WriteLine(kvp.Value);
-                    Console.WriteLine();
-                }
-            }
-        }
+            Console.ReadKey();
+        }      
 
         static readonly string[] SizeSuffixes =
                    { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
@@ -103,5 +77,7 @@ namespace PGBLib.IO
 
             return string.Format("{0:n1} {1}", adjustedSize, SizeSuffixes[mag]);
         }
+
+
     }
 }
