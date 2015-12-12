@@ -51,7 +51,9 @@ namespace PGBLib.IO.Win32
                 now = DateTime.Now;
                 bytes = 0;
                 files = 0;
-                foreach (var v in new DirectoryScanner("C:\\Program Files (x86)"))
+                DirectoryScanner scanner = new DirectoryScanner("C:\\Program Files (x86)");
+                scanner.blacklist.Add(@"C:\Program Files (x86)\Steam");
+                foreach (var v in scanner)
                 {
                     bytes += v.Length;
                     files++;
@@ -62,7 +64,7 @@ namespace PGBLib.IO.Win32
                 Console.WriteLine();
             }
 
-            Console.ReadKey();
+            //Console.ReadKey();
         }      
 
         static readonly string[] SizeSuffixes =

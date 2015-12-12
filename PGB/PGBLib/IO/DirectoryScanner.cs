@@ -2,38 +2,44 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Linq;
 
 namespace PGBLib.IO
 {
     public class DirectoryScanner : IEnumerable<FileInfo>
     {
         private string path;
+        public HashSet<string> blacklist { get; set; }
 
         public DirectoryScanner(string path)
         {
             this.path = path;
+            blacklist = new HashSet<string>();
         }
 
         public IEnumerator<FileInfo> GetEnumerator()
         {
-            return new DirectoryEnumerator(path);
+            return new DirectoryEnumerator(path, blacklist);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return new DirectoryEnumerator(path);
+            return new DirectoryEnumerator(path, blacklist);
         }
 
         class DirectoryEnumerator : IEnumerator<FileInfo>
         {
             private DirectoryInfo topDirectory;
+            private HashSet<string> blacklist;
 
             IEnumerator<FileSystemInfo> enumerator;
 
             Stack<DirectoryInfo> directories;
 
-            public DirectoryEnumerator(string path)
+            public DirectoryEnumerator(string path, HashSet<string> blacklist)
             {
+                this.blacklist = blacklist;
                 topDirectory = new DirectoryInfo(path);
                 enumerator = topDirectory.EnumerateFileSystemInfos().GetEnumerator();
                 directories = new Stack<DirectoryInfo>();
@@ -62,46 +68,62 @@ namespace PGBLib.IO
                 enumerator.Dispose();                
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool MoveNext()
             {
-                if (enumerator.MoveNext())
+                //If there's nothing left in the folder, move on
+                try
                 {
-                    bool continuing = true;
-                    while (enumerator.Current is DirectoryInfo)
+                    if (!enumerator.MoveNext())
                     {
-                        directories.Push((DirectoryInfo)enumerator.Current);
-                        continuing = enumerator.MoveNext();
+                        return NextDirectory();
+                    }
+                }
+                catch (UnauthorizedAccessException e)
+                {
+
+                }
+                
+                //Add subfolders to the stack until we hit a file or run out
+                bool continuing = true;
+                for (DirectoryInfo currentAsDirectory = this.enumerator.Current as DirectoryInfo; currentAsDirectory != null; currentAsDirectory = this.enumerator.Current as DirectoryInfo)
+                {
+                    if (blacklist.Count == 0 || !blacklist.Contains(currentAsDirectory.FullName))
+                    {
+                        directories.Push(currentAsDirectory);
                     }
 
-                    if (continuing)
-                    {
-                        current = (FileInfo)enumerator.Current;
-                        return true;
-                    }
-                    else
-                    {
-                        return DrillDown();
-                    }
+                    continuing = enumerator.MoveNext();
                 }
-                else
+
+                //If we've run out, then move on
+                if (!continuing)
                 {
-                    return DrillDown();
+                    return NextDirectory();
                 }
+
+                //Otherwise, conditionally add the file
+                if (blacklist.Count == 0 || !blacklist.Contains(enumerator.Current.FullName))
+                {
+                    current = (FileInfo)enumerator.Current;
+                    return true;
+                }
+
+                //This file was blacklisted - move on
+                return MoveNext();                
             }
 
-            private bool DrillDown()
-            {
-                if (directories.Count > 0)
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private bool NextDirectory()
+            {                
+                if (directories.Count != 0)
                 {
                     DirectoryInfo dir = directories.Pop();
                     enumerator.Dispose();
                     enumerator = dir.EnumerateFileSystemInfos().GetEnumerator();
                     return MoveNext();
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
 
             public void Reset()
