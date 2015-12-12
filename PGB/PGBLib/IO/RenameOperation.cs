@@ -26,7 +26,7 @@ namespace PGBLib.IO
             {
                 throw new InvalidOperationException("NewFileName should not include directory information.");
             }
-            System.IO.File.Move(FileName, Path.Combine(Path.GetDirectoryName(FileName), NewFileName));
+            File.Move(FileName, Path.Combine(Path.GetDirectoryName(FileName), NewFileName));
         }
     }
 }

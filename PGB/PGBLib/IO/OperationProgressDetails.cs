@@ -2,7 +2,7 @@
 
 namespace PGBLib.IO
 {
-    class OperationProgressDetails : EventArgs
+    public class OperationProgressDetails : EventArgs
     {   
         public OperationProgressType ProgressType { get; }
         public IOOperation Operation { get; }
@@ -10,6 +10,15 @@ namespace PGBLib.IO
         public long BytesTransferred { get; }
         public long BytesTotal { get; }
         public Exception Error { get; }
+        public double PercentComplete
+        {
+            get
+            {
+                if (BytesTotal == 0)
+                    return 0;
+                return ((double)BytesTransferred) / ((double)BytesTotal) * 100;
+            }
+        }
 
         public OperationProgressDetails(IOOperation operation, bool completed)
         {
@@ -37,7 +46,7 @@ namespace PGBLib.IO
         }
     }
 
-    enum OperationProgressType
+    public enum OperationProgressType
     {
         Generic,
         Completed,

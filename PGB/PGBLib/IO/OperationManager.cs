@@ -9,7 +9,7 @@ namespace PGBLib.IO
     /// A multi-threaded manager for large numbers of file operations.
     /// Designed to support starting operation sets before they are fully built.
     /// </summary>
-    class OperationManager
+    public class OperationManager : IDisposable
     {
         public event OperationProgressHandler ProgressMade
         {
@@ -73,6 +73,13 @@ namespace PGBLib.IO
             state = OperationState.Initialized;
         }
 
+        public OperationManager(int threadsPerWorker)
+        {
+            workers = new Dictionary<RootSet, OperationWorker>();
+            this.threadsPerWorker = threadsPerWorker;
+            state = OperationState.Initialized;
+        }
+
         /// <summary>
         /// Start this OperationManager, or resume from a paused state.
         /// </summary>
@@ -133,7 +140,7 @@ namespace PGBLib.IO
 
         private void RegisterWorker(RootSet roots)
         {
-            OperationWorker worker = new OperationWorker(threadsPerWorker);
+            OperationWorker worker = new OperationWorker(threadsPerWorker, roots.ToString());
             worker.ProgressMade += Worker_ProgressMade;
             workers.Add(roots, worker);
 
@@ -159,6 +166,11 @@ namespace PGBLib.IO
             {
                 handler(this, details);
             }
+        }
+
+        public void Dispose()
+        {
+            Terminate();
         }
     }
 }

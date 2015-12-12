@@ -46,6 +46,8 @@ namespace PGBLib.IO
 
         public Thread[] WorkerThreads { get { return workerThreads; } }
 
+        public string Name { get; }
+
 
         private OperationProgressHandler progressHandler;
 
@@ -64,14 +66,14 @@ namespace PGBLib.IO
 
         private bool copyTerminateFlag = false;
 
-
-        public OperationWorker(int workerCount)
+        public OperationWorker(int workerCount, string name)
         {
+            Name = name;
             operationQueue = new Queue<IOOperation>();
             workerThreads = new Thread[workerCount];
             for (int i = 0; i < workerCount; i++)
             {
-                workerThreads[i] = new Thread(new ThreadStart(DoWork));
+                workerThreads[i] = new Thread(new ThreadStart(DoWork)) { Name = name + " worker thread #" + (i + 1) };
             }
         }
 
@@ -133,11 +135,11 @@ namespace PGBLib.IO
 
                     if (currentOperation != null)
                         ProcessOperation(currentOperation);
-                    else //We have nothing to do. Yield our current time slice.
-                        Thread.Sleep(0);
+                    else //We have nothing to do. Yield.
+                        Thread.Sleep(100);
                 }
-                else //We are paused. Yield our current time slice.
-                    Thread.Sleep(0);
+                else //We are paused. Yield.
+                    Thread.Sleep(100);
             }
         }
 
@@ -151,8 +153,7 @@ namespace PGBLib.IO
                 //Copy operations get some special callbacks and tracking
                 CopyOperation copyOp = operation as CopyOperation;
                 if (copyOp != null)
-                {
-                    
+                {                    
                     CopyProgressCallback copyCall = new CopyProgressCallback((total, transferred, sourceFile, destinationFile) => {
                         OnProgress(new OperationProgressDetails(operation, transferred, total));
                         return CopyProgressResult.PROGRESS_CONTINUE;
@@ -163,9 +164,6 @@ namespace PGBLib.IO
                 {
                     operation.DoOperation();
                 }
-
-                //Notify the caller that the operation has completed
-                OnProgress(new OperationProgressDetails(operation, true));
             }
             catch (Exception e) //We're catching everything (*gasp!*) so we can bubble it up without blowing up stacks of threads.
             {
@@ -178,6 +176,9 @@ namespace PGBLib.IO
                     bytesProcessed += operation.EffectiveFileSize;
                     operationsProcessed += 1;
                 }
+
+                //Notify the caller that the operation has completed
+                OnProgress(new OperationProgressDetails(operation, true));
             }
         }
 

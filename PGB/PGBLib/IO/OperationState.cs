@@ -1,6 +1,6 @@
 ﻿namespace PGBLib.IO
 {
-    enum OperationState
+    public enum OperationState
     {
         Initialized,
         Running,
