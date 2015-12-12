@@ -8,5 +8,9 @@ namespace PGBLib.Core
 {
     class PurgeTask : BackupTask
     {
+        public override void Run()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

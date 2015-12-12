@@ -8,5 +8,9 @@ namespace PGBLib.Core
 {
     class UpdateBackupTask : BackupTask
     {
+        public override void Run()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

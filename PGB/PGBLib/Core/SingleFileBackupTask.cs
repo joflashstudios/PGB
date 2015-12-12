@@ -8,5 +8,9 @@ namespace PGBLib.Core
 {
     class SingleFileBackupTask : BackupTask
     {
+        public override void Run()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

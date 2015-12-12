@@ -8,5 +8,9 @@ namespace PGBLib.Core
 {
     class IncrementalBackupTask : BackupTask
     {
+        public override void Run()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
