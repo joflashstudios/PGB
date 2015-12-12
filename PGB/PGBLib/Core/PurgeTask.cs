@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PGBLib.Core
 {
-    class PurgeBackupItem
+    class PurgeTask : BackupTask
     {
     }
 }
