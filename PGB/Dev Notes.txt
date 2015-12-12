@@ -12,9 +12,6 @@ Shadow Copy?
 
 - Ideas -
 Public static program class manages program state.
-Use a thread per drive or network share for file copying, and keep them fed via a queue. You can stack completed files and errors or something.
-^Or maybe more, if it's a lot of small files? Will have to experement.
-File operations start as soon as the scan thread starts adding stuff to the queue
 
 Regarding progress as reported by OperationManager - just report bytes moved / bytes to be moved AND file operations complete / operations to go.
 
