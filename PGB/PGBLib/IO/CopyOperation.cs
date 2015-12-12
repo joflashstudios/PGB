@@ -10,6 +10,17 @@ namespace PGBLib.IO
 {
     public class CopyOperation : OngoingOperation
     {
+        public CopyOperation()
+        {
+
+        }
+
+        public CopyOperation(string fileName, string transferDestination)
+        {
+            FileName = fileName;
+            TransferDestination = transferDestination;
+        }
+
         /// <summary>
         /// Whether to overwrite or throw an exception if the file already exists
         /// </summary>
@@ -50,6 +61,9 @@ namespace PGBLib.IO
         /// <param name="callback">The callback routine to call on progress</param>
         public override void DoOperation(IOProgressCallback callback)
         {
+            if (string.IsNullOrEmpty(FileName) || string.IsNullOrEmpty(TransferDestination))
+                throw new InvalidOperationException("FileName and TransferDestination cannot be blank or null.");
+
             PrepareDirectory();
 
             CopyFileFlags flags = CopyFileFlags.COPY_FILE_ALLOW_DECRYPTED_DESTINATION;

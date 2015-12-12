@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using PGBLib.IO.Win32;
 
 namespace PGBLib.IO
@@ -37,6 +38,9 @@ namespace PGBLib.IO
         /// <param name="callback">The callback routine to call on progress</param>
         public override void DoOperation(IOProgressCallback callback)
         {
+            if (string.IsNullOrEmpty(FileName) || string.IsNullOrEmpty(TransferDestination))
+                throw new InvalidOperationException("FileName and TransferDestination cannot be blank or null.");
+
             //Moves on the same volume should be so fast we can treat them as deletes or renames,
             //no progress needed. On other volumes, just fake the move and use the copy system.
             if (IsSameVolume)

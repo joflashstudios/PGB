@@ -1,9 +1,20 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace PGBLib.IO
 {
     public class DeleteOperation : IOOperation
     {
+        public DeleteOperation()
+        {
+
+        }
+        
+        public DeleteOperation(string fileName)
+        {
+            FileName = fileName;
+        }
+
         /// <summary>
         /// Whether to delete the folder after deleting the last file out of it on a delete operation
         /// </summary>
@@ -19,7 +30,10 @@ namespace PGBLib.IO
 
         public override void DoOperation()
         {
-            System.IO.File.Delete(FileName);
+            if (string.IsNullOrEmpty(FileName))
+                throw new InvalidOperationException("FileName cannot be null or empty.");
+
+            File.Delete(FileName);
             string directory = Path.GetDirectoryName(FileName);
             if (DeleteEmptyFolder && Directory.GetFileSystemEntries(directory).Length == 0)
             {
