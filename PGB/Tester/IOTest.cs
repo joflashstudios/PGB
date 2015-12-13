@@ -53,6 +53,7 @@ namespace PGBLib.IO.Win32
                 files = 0;
                 DirectoryScanner scanner = new DirectoryScanner("D:\\");
                 scanner.blacklist.Add(@"C:\Program Files (x86)\Steam");
+                scanner.ScannerErrored += Scanner_ScannerErrored;
                 foreach (var v in scanner)
                 {
                     bytes += v.Length;
@@ -65,7 +66,12 @@ namespace PGBLib.IO.Win32
             }
 
             //Console.ReadKey();
-        }      
+        }
+
+        private static void Scanner_ScannerErrored(UnauthorizedAccessException error)
+        {
+
+        }
 
         static readonly string[] SizeSuffixes =
                    { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };

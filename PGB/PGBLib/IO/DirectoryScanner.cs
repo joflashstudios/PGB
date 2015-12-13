@@ -12,6 +12,8 @@ namespace PGBLib.IO
         private string path;
         public HashSet<string> blacklist { get; set; }
 
+        public event DirectoryScanErrorHandler ScannerErrored;
+
         public DirectoryScanner(string path)
         {
             this.path = path;
@@ -20,18 +22,30 @@ namespace PGBLib.IO
 
         public IEnumerator<FileInfo> GetEnumerator()
         {
-            return new DirectoryEnumerator(path, blacklist);
+            DirectoryEnumerator enumerator = new DirectoryEnumerator(path, blacklist);
+            enumerator.ScannerErrored += Enumerator_ScannerErrored;
+            return enumerator;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return new DirectoryEnumerator(path, blacklist);
+            DirectoryEnumerator enumerator = new DirectoryEnumerator(path, blacklist);
+            enumerator.ScannerErrored += Enumerator_ScannerErrored;
+            return enumerator;
+        }
+
+        private void Enumerator_ScannerErrored(UnauthorizedAccessException error)
+        {
+            if (ScannerErrored != null)
+                ScannerErrored(error);
         }
 
         class DirectoryEnumerator : IEnumerator<FileInfo>
         {
             private DirectoryInfo topDirectory;
             private HashSet<string> blacklist;
+
+            public event DirectoryScanErrorHandler ScannerErrored;
 
             IEnumerator<FileSystemInfo> enumerator;
 
@@ -81,6 +95,7 @@ namespace PGBLib.IO
                 }
                 catch (UnauthorizedAccessException e)
                 {
+                    ScannerErrored(e);
                     return NextDirectory();
                 }
                 
@@ -131,5 +146,7 @@ namespace PGBLib.IO
                 enumerator.Reset();
             }
         }
+
+        public delegate void DirectoryScanErrorHandler(UnauthorizedAccessException error);
     }
 }
