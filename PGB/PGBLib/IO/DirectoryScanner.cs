@@ -81,7 +81,7 @@ namespace PGBLib.IO
                 }
                 catch (UnauthorizedAccessException e)
                 {
-
+                    return NextDirectory();
                 }
                 
                 //Add subfolders to the stack until we hit a file or run out

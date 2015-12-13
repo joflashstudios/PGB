@@ -25,33 +25,33 @@ namespace PGBLib.IO.Win32
                 //}
                 TimeSpan elapsed = DateTime.Now - now;
 
-                now = DateTime.Now;
-                bytes = 0;
-                files = 0;
-                foreach (var v in new DirectoryInfo("C:\\Program Files (x86)").GetFiles("*", SearchOption.AllDirectories))
-                {
-                    bytes += v.Length;
-                    files++;
-                }
-                elapsed = DateTime.Now - now;
-                Console.WriteLine(SizeSuffix(bytes) + " in " + files + " files in " + elapsed.TotalSeconds + " seconds (Non-perf)");
+                //now = DateTime.Now;
+                //bytes = 0;
+                //files = 0;
+                //foreach (var v in new DirectoryInfo("C:\\Program Files (x86)").GetFiles("*", SearchOption.AllDirectories))
+                //{
+                //    bytes += v.Length;
+                //    files++;
+                //}
+                //elapsed = DateTime.Now - now;
+                //Console.WriteLine(SizeSuffix(bytes) + " in " + files + " files in " + elapsed.TotalSeconds + " seconds (Non-perf)");
+
+                //now = DateTime.Now;
+                //bytes = 0;
+                //files = 0;
+                //foreach (var v in new DirectoryInfo("C:\\Program Files (x86)").EnumerateFiles("*", SearchOption.AllDirectories))
+                //{
+                //    bytes += v.Length;
+                //    files++;
+                //}
+                //elapsed = DateTime.Now - now;
+
+                //Console.WriteLine(SizeSuffix(bytes) + " in " + files + " files in " + elapsed.TotalSeconds + " seconds (enumerate)");
 
                 now = DateTime.Now;
                 bytes = 0;
                 files = 0;
-                foreach (var v in new DirectoryInfo("C:\\Program Files (x86)").EnumerateFiles("*", SearchOption.AllDirectories))
-                {
-                    bytes += v.Length;
-                    files++;
-                }
-                elapsed = DateTime.Now - now;
-
-                Console.WriteLine(SizeSuffix(bytes) + " in " + files + " files in " + elapsed.TotalSeconds + " seconds (enumerate)");
-
-                now = DateTime.Now;
-                bytes = 0;
-                files = 0;
-                DirectoryScanner scanner = new DirectoryScanner("C:\\Program Files (x86)");
+                DirectoryScanner scanner = new DirectoryScanner("D:\\");
                 scanner.blacklist.Add(@"C:\Program Files (x86)\Steam");
                 foreach (var v in scanner)
                 {
