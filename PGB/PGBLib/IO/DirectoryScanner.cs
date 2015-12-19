@@ -10,26 +10,26 @@ namespace PGBLib.IO
     public class DirectoryScanner : IEnumerable<FileInfo>
     {
         private string path;
-        public HashSet<string> blacklist { get; set; }
+        public HashSet<string> Blacklist { get; set; }
 
         public event DirectoryScanErrorHandler ScannerErrored;
 
         public DirectoryScanner(string path)
         {
             this.path = path;
-            blacklist = new HashSet<string>();
+            Blacklist = new HashSet<string>();
         }
 
         public IEnumerator<FileInfo> GetEnumerator()
         {
-            DirectoryEnumerator enumerator = new DirectoryEnumerator(path, blacklist);
+            DirectoryEnumerator enumerator = new DirectoryEnumerator(path, Blacklist);
             enumerator.ScannerErrored += Enumerator_ScannerErrored;
             return enumerator;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            DirectoryEnumerator enumerator = new DirectoryEnumerator(path, blacklist);
+            DirectoryEnumerator enumerator = new DirectoryEnumerator(path, Blacklist);
             enumerator.ScannerErrored += Enumerator_ScannerErrored;
             return enumerator;
         }
