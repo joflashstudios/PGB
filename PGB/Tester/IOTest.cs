@@ -52,7 +52,7 @@ namespace PGBLib.IO.Win32
                 bytes = 0;
                 files = 0;
                 DirectoryScanner scanner = new DirectoryScanner("D:\\");
-                scanner.blacklist.Add(@"C:\Program Files (x86)\Steam");
+                scanner.Blacklist.Add(@"C:\Program Files (x86)\Steam");
                 scanner.ScannerErrored += Scanner_ScannerErrored;
                 foreach (var v in scanner)
                 {
