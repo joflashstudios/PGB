@@ -42,14 +42,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Backup.cs" />
     <Compile Include="Core\BackupProgressEventArgs.cs" />
-    <Compile Include="Core\BackupTask.cs" />
-    <Compile Include="Core\SingleFileBackupTask.cs" />
-    <Compile Include="Core\IncrementalBackupTask.cs" />
-    <Compile Include="Core\Incremental\IncrementalBackupItemStep.cs" />
-    <Compile Include="Core\PurgeTask.cs" />
-    <Compile Include="Core\UpdateBackupTask.cs" />
+    <Compile Include="Core\Backup.cs" />
+    <Compile Include="Core\SingleFileBackup.cs" />
+    <Compile Include="Core\IncrementalBackup.cs" />
+    <Compile Include="Core\PurgeBackup.cs" />
+    <Compile Include="Core\UpdateBackup.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IO\CopyOperation.cs" />
     <Compile Include="IO\Delegates.cs" />

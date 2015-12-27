@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PGBLib.Core
 {
-    class IncrementalBackupTask : BackupTask
+    class PurgeBackup : Backup
     {
         public override void Run()
         {

@@ -7,14 +7,14 @@ using PGBLib.IO;
 
 namespace PGBLib.Core
 {
-    public class SingleFileBackupTask : BackupTask
+    public class SingleFileBackup : Backup
     {
         public bool DeleteSource { get; set; }
         public bool Overwrite { get; set; }
 
-        public SingleFileBackupTask() { }
+        public SingleFileBackup() { }
 
-        public SingleFileBackupTask(string source, string destination)
+        public SingleFileBackup(string source, string destination)
         {
             Source = source;
             Destination = destination;

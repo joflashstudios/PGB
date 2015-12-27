@@ -8,17 +8,26 @@ namespace PGBLib.Core
 {
     public abstract class Backup
     {
-        public Backup(string name)
+        public abstract void Run();
+
+        public string Source { get; set; }
+
+        public string Destination { get; set; }
+
+        public event BackupProgressEventHandler BackupProgress;
+
+        public event Action Complete;
+
+        protected void OnBackupProgress(BackupProgressEventArgs e)
         {
-            Name = name;
+            if (BackupProgress != null)
+                BackupProgress(this, e);
         }
 
-        public void Run()
+        protected void OnComplete()
         {
-            Tasks.ForEach(n => n.Run());
+            if (Complete != null)
+                Complete();
         }
-
-        public List<BackupTask> Tasks { get; set; }
-        public string Name { get; }
     }
 }

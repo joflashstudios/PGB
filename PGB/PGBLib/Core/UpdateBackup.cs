@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace PGBLib.Core
 {
-    public class UpdateBackupTask : BackupTask
+    public class UpdateBackup : Backup
     {
         public bool RemoveDeletedFiles { get; set; }
 
