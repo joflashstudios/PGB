@@ -66,7 +66,7 @@ namespace PGBLib.IO.Win32
                     CopyProgressRoutine routine = (total, transferred, streamSize, StreamByteTrans, dwStreamNumber, reason, hSourceFile, hDestinationFile, lpData) => {
                         if (progressHandler != null)
                         {
-                            return progressHandler(total, transferred, source, destination);
+                            return progressHandler(total - transferred, transferred, source, destination);
                         }
                         return IOProgressResult.PROGRESS_CONTINUE;
                     };

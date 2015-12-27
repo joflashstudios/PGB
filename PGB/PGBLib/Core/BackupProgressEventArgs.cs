@@ -23,7 +23,7 @@ namespace PGBLib.Core
                 else
                     return (int)
                         (((OperationsComplete * 100) / (OperationsPending + OperationsComplete)) +
-                        (((BytesComplete + OperationDetails.BytesTransferred) * 100) / (BytesPending + BytesComplete + OperationDetails.BytesTotal)))
+                        (((BytesComplete + OperationDetails.BytesProcessed) * 100) / (BytesPending + BytesComplete + OperationDetails.BytesTotal)))
                         / 2;
             }
         }

@@ -7,16 +7,16 @@ namespace PGBLib.IO
         public OperationProgressType ProgressType { get; }
         public IOOperation Operation { get; }
         public bool Completed { get; }
-        public long BytesTransferred { get; }
-        public long BytesTotal { get; }
+        public long BytesProcessed { get; }
+        public long BytesPending { get; }
         public Exception Error { get; }
-        public double PercentComplete
+        public int PercentComplete
         {
             get
             {
-                if (BytesTotal == 0)
+                if (BytesPending + BytesProcessed == 0)
                     return 0;
-                return ((double)BytesTransferred) / ((double)BytesTotal) * 100;
+                return (int)((BytesProcessed * 100) / (BytesPending + BytesProcessed));
             }
         }
 
@@ -36,11 +36,11 @@ namespace PGBLib.IO
             ProgressType = error != null ? OperationProgressType.Errored : OperationProgressType.Generic;
         }
 
-        public OperationProgressDetails(IOOperation operation, long bytesTransfered, long bytesTotal)
+        public OperationProgressDetails(IOOperation operation, long bytesProcessed, long bytesPending)
         {
             Operation = operation;
-            BytesTransferred = bytesTransfered;
-            BytesTotal = bytesTotal;
+            BytesProcessed = bytesProcessed;
+            BytesPending = bytesPending;
 
             ProgressType = OperationProgressType.InProgress;
         }
