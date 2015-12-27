@@ -7,10 +7,21 @@ using System.Linq;
 
 namespace PGBLib.IO
 {
+    public delegate void ScannerErrorHandler(FileSystemInfo obj, Exception e);
+
     public class DirectoryScanner : IEnumerable<FileInfo>
     {
         private string path;
-        public HashSet<string> Blacklist { get; set; }
+        public HashSet<string> blacklist { get; set; }
+        public event ScannerErrorHandler Errored;
+
+        protected virtual void OnError(FileSystemInfo obj, Exception e)
+        {
+            //Raise the Tick event (see below for an explanation of this)
+            var errorEvent = Errored;
+            if (errorEvent != null)
+                errorEvent(obj, e);
+        }
 
         public event DirectoryScanErrorHandler ScannerErrored;
 
@@ -20,24 +31,23 @@ namespace PGBLib.IO
             Blacklist = new HashSet<string>();
         }
 
-        public IEnumerator<FileInfo> GetEnumerator()
-        {
-            DirectoryEnumerator enumerator = new DirectoryEnumerator(path, Blacklist);
-            enumerator.ScannerErrored += Enumerator_ScannerErrored;
-            return enumerator;
-        }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
-            DirectoryEnumerator enumerator = new DirectoryEnumerator(path, Blacklist);
-            enumerator.ScannerErrored += Enumerator_ScannerErrored;
-            return enumerator;
+            DirectoryEnumerator en = new DirectoryEnumerator(path, blacklist);
+            en.Errored += EnumeratorErrored;
+            return en;            
         }
 
-        private void Enumerator_ScannerErrored(UnauthorizedAccessException error)
+        public IEnumerator<FileInfo> GetEnumerator()
         {
-            if (ScannerErrored != null)
-                ScannerErrored(error);
+            DirectoryEnumerator en = new DirectoryEnumerator(path, blacklist);
+            en.Errored += EnumeratorErrored;
+            return en;
+        }
+
+        private void EnumeratorErrored(FileSystemInfo obj, Exception e)
+        {
+            OnError(obj, e);
         }
 
         class DirectoryEnumerator : IEnumerator<FileInfo>
@@ -50,6 +60,16 @@ namespace PGBLib.IO
             IEnumerator<FileSystemInfo> enumerator;
 
             Stack<DirectoryInfo> directories;
+
+            public event ScannerErrorHandler Errored;
+
+            protected virtual void OnError(FileSystemInfo obj, Exception e)
+            {
+                //Raise the Tick event (see below for an explanation of this)
+                var errorEvent = Errored;
+                if (errorEvent != null)
+                    errorEvent(obj, e);
+            }
 
             public DirectoryEnumerator(string path, HashSet<string> blacklist)
             {
@@ -86,18 +106,8 @@ namespace PGBLib.IO
             public bool MoveNext()
             {
                 //If there's nothing left in the folder, move on
-                try
-                {
                     if (!enumerator.MoveNext())
-                    {
                         return NextDirectory();
-                    }
-                }
-                catch (UnauthorizedAccessException e)
-                {
-                    ScannerErrored(e);
-                    return NextDirectory();
-                }
                 
                 //Add subfolders to the stack until we hit a file or run out
                 bool continuing = true;
@@ -113,9 +123,7 @@ namespace PGBLib.IO
 
                 //If we've run out, then move on
                 if (!continuing)
-                {
                     return NextDirectory();
-                }
 
                 //Otherwise, conditionally add the file
                 if (blacklist.Count == 0 || !blacklist.Contains(enumerator.Current.FullName))
@@ -135,8 +143,16 @@ namespace PGBLib.IO
                 {
                     DirectoryInfo dir = directories.Pop();
                     enumerator.Dispose();
+                    try
+                    {
                     enumerator = dir.EnumerateFileSystemInfos().GetEnumerator();
                     return MoveNext();
+                }
+                    catch (UnauthorizedAccessException e)
+                    {
+                        OnError(dir, e);
+                        return NextDirectory();
+                    }
                 }
                 return false;
             }
