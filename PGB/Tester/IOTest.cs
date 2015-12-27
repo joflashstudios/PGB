@@ -13,7 +13,7 @@ namespace PGBLib.IO.Win32
         public static void RunTest()
         {
 
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 5; i++)
             {
                 DateTime now = DateTime.Now;
                 long bytes = 0;
@@ -39,7 +39,7 @@ namespace PGBLib.IO.Win32
                 //now = DateTime.Now;
                 //bytes = 0;
                 //files = 0;
-                //foreach (var v in new DirectoryInfo("C:\\Program Files (x86)").EnumerateFiles("*", SearchOption.AllDirectories))
+                //foreach (var v in new DirectoryInfo("F:\\2015").EnumerateFiles("*", SearchOption.AllDirectories))
                 //{
                 //    bytes += v.Length;
                 //    files++;
@@ -51,20 +51,25 @@ namespace PGBLib.IO.Win32
                 now = DateTime.Now;
                 bytes = 0;
                 files = 0;
-                DirectoryScanner scanner = new DirectoryScanner("D:\\");
+
+                DirectoryScanner scanner = new DirectoryScanner("C:\\");
+                scanner.Errored += (ob, error) => {
+                    Console.WriteLine(ob.Name + " was inaccessable.");
+                };
                 scanner.blacklist.Add(@"C:\Program Files (x86)\Steam");
                 foreach (var v in scanner)
                 {
                     bytes += v.Length;
                     files++;
                 }
+
                 elapsed = DateTime.Now - now;
 
                 Console.WriteLine(SizeSuffix(bytes) + " in " + files + " files in " + elapsed.TotalSeconds + " seconds (custom enumerate)");
                 Console.WriteLine();
             }
 
-            //Console.ReadKey();
+            Console.ReadKey();
         }      
 
         static readonly string[] SizeSuffixes =
