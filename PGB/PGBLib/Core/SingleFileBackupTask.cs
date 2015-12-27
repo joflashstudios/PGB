@@ -20,6 +20,7 @@ namespace PGBLib.Core
             Destination = destination;
         }
 
+        //Normally the list-building logic would be in its own method on a separate thread. But this is a bit of a special case.
         public override void Run()
         {
             if (string.IsNullOrEmpty(Source) || string.IsNullOrEmpty(Destination))
@@ -49,7 +50,7 @@ namespace PGBLib.Core
 
         private void Worker_ProgressMade(object sender, OperationProgressDetails progress)
         {
-            OnBackupProgress(new BackupProgressEventArgs(progress, progress.BytesTotal, progress.BytesTransferred, 1, 0));
+            OnBackupProgress(new BackupProgressEventArgs(progress, progress.BytesTotal - progress.BytesTransferred, progress.BytesTransferred, 1, 0));
 
             if (progress.Completed)
             {

@@ -36,10 +36,10 @@ namespace PGBLib.IO
             ProgressType = error != null ? OperationProgressType.Errored : OperationProgressType.Generic;
         }
 
-        public OperationProgressDetails(IOOperation operation, long bytesTransferred, long bytesTotal)
+        public OperationProgressDetails(IOOperation operation, long bytesTransfered, long bytesTotal)
         {
             Operation = operation;
-            BytesTransferred = bytesTransferred;
+            BytesTransferred = bytesTransfered;
             BytesTotal = bytesTotal;
 
             ProgressType = OperationProgressType.InProgress;
