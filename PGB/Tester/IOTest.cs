@@ -51,10 +51,12 @@ namespace PGBLib.IO.Win32
                 now = DateTime.Now;
                 bytes = 0;
                 files = 0;
+                int errorNum = 0;
 
                 DirectoryScanner scanner = new DirectoryScanner("C:\\");
                 scanner.Errored += (ob, error) => {
-                    Console.WriteLine(ob.Name + " was inaccessable.");
+                    errorNum++;
+                    Console.WriteLine("Error #" + errorNum + " " + ob.Name + " was inaccessable.");
                 };
                 scanner.blacklist.Add(@"C:\Program Files (x86)\Steam");
                 foreach (var v in scanner)

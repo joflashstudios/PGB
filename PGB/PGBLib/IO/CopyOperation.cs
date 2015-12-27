@@ -117,6 +117,7 @@ namespace PGBLib.IO
                     CreateDirectoryTree(null, GetParent(bottomDirectory));
                 }                
             }
+
             //Creating the current directory
             if (Path.GetFileName(bottomTemplateDirectory) == Path.GetDirectoryName(bottomDirectory))
             {

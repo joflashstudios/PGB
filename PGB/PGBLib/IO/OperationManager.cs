@@ -130,6 +130,7 @@ namespace PGBLib.IO
 
             workers[roots].EnqueueOperation(op);
         }
+
         public void AddOperations(IEnumerable<IOOperation> ops)
         {
             foreach (IOOperation op in ops)
@@ -168,7 +169,7 @@ namespace PGBLib.IO
             }
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             Terminate();
         }

@@ -49,6 +49,7 @@
     <Compile Include="Core\Incremental\IncrementalBackupItemStep.cs" />
     <Compile Include="Core\PurgeTask.cs" />
     <Compile Include="Core\UpdateBackupTask.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IO\CopyOperation.cs" />
     <Compile Include="IO\Delegates.cs" />
     <Compile Include="IO\DeleteOperation.cs" />

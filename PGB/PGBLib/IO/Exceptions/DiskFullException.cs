@@ -1,5 +1,6 @@
 ﻿namespace System.IO
 {
+    [Serializable]
     class DiskFullException : IOException
     {
         public DiskFullException() : base()

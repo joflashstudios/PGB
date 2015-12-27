@@ -3,6 +3,7 @@
     /// <summary>
     /// Represents an exception thrown when there is a sharing violation trying to access a file
     /// </summary>
+    [Serializable]
     class SharingViolationException : IOException
     {
         public SharingViolationException() : base()

@@ -63,9 +63,7 @@ namespace PGBLib.IO
         private readonly object statLock = new object();
 
         private Queue<IOOperation> operationQueue { get; }
-
-        private bool copyTerminateFlag = false;
-
+        
         public OperationWorker(int workerCount, string name)
         {
             Name = name;
@@ -104,7 +102,6 @@ namespace PGBLib.IO
 
         public void Dispose()
         {
-            copyTerminateFlag = true;
             state = OperationState.Terminated;
         }
 
