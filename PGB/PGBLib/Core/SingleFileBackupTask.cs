@@ -57,7 +57,7 @@ namespace PGBLib.Core
             }
             else
             {
-                OnBackupProgress(new BackupProgressEventArgs(progress, progress.BytesTotal - progress.BytesProcessed, progress.BytesProcessed, 1, 0));
+                OnBackupProgress(new BackupProgressEventArgs(progress, progress.BytesPending, progress.BytesProcessed, 1, 0));
             }
         }
     }

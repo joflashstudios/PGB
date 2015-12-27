@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using PGBLib.IO.Win32;
+using System.Linq;
 
 namespace PGBLib.IO
 {
@@ -28,11 +29,11 @@ namespace PGBLib.IO
         /// <summary>
         /// Gets the current number of pending file operations
         /// </summary>
-        public int OperationsPending { get { return operationQueue.Count; } }
+        public int OperationsPending { get { return operationQueue.Count + activeOperations.Count; } }
         /// <summary>
         /// Gets the current number of bytes in pending move or copy operations.
         /// </summary>
-        public long BytesPending { get { return bytesPending; } }
+        public long BytesPending { get { return bytesPending + activeOperations.Sum(n => n.Value.BytesPending); } }
         /// <summary>
         /// Gets the current number of operations that have completed processing.
         /// </summary>
@@ -40,7 +41,7 @@ namespace PGBLib.IO
         /// <summary>
         /// Gets the current number of bytes in completed move or copy operations. Includes errored operations.
         /// </summary>
-        public long BytesProcessed { get { return bytesProcessed; } }
+        public long BytesProcessed { get { return bytesProcessed + activeOperations.Sum(n => n.Value.BytesProcessed); } }
 
         public OperationState State { get { return state; } }
 
@@ -54,6 +55,8 @@ namespace PGBLib.IO
         private long bytesPending = 0;
         private int operationsProcessed = 0;
         private long bytesProcessed = 0;
+
+        Dictionary<IOOperation, OperationProgressDetails> activeOperations = new Dictionary<IOOperation, OperationProgressDetails>();
 
         private OperationState state;
 
@@ -151,8 +154,8 @@ namespace PGBLib.IO
                 OngoingOperation progressOp = operation as OngoingOperation;
                 if (progressOp != null)
                 {                    
-                    IOProgressCallback copyCall = new IOProgressCallback((total, transferred, sourceFile, destinationFile) => {
-                        OnProgress(new OperationProgressDetails(operation, transferred, total));
+                    IOProgressCallback copyCall = new IOProgressCallback((pending, transferred, sourceFile, destinationFile) => {
+                        OnProgress(new OperationProgressDetails(operation, transferred, pending));
 
                         //TODO: potentially add in-file pause to this? Right now we only support one in-file operation: cancel.
                         if (State == OperationState.Terminated)
@@ -186,6 +189,21 @@ namespace PGBLib.IO
 
         private void OnProgress(OperationProgressDetails details)
         {
+            lock(statLock)
+            {   //We only track non-zero operations, because they're the only ongoing ones
+                if (details.Operation.EffectiveFileSize > 0)
+                {
+                    if (details.Completed && activeOperations.ContainsKey(details.Operation))
+                    {
+                        activeOperations.Remove(details.Operation);
+                    }
+                    else
+                    {
+                        activeOperations[details.Operation] = details;
+                    }
+                }
+            }
+
             OperationProgressHandler handler;
             lock (eventLock)
             {
