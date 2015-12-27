@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PGBLib.Core
 {
-    class Backup
+    public abstract class Backup
     {
         public Backup(string name)
         {

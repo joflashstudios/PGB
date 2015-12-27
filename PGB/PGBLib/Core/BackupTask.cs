@@ -13,5 +13,21 @@ namespace PGBLib.Core
         public string Source { get; set; }
 
         public string Destination { get; set; }
+
+        public event BackupProgressEventHandler BackupProgress;
+
+        public event Action Complete;
+
+        protected void OnBackupProgress(BackupProgressEventArgs e)
+        {
+            if (BackupProgress != null)
+                BackupProgress(this, e);
+        }
+
+        protected void OnComplete()
+        {
+            if (Complete != null)
+                Complete();
+        }
     }
 }
