@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using PGBLib.IO;
+using PGBLib.Core;
 
 namespace PGBLib.IO.Win32
 {
@@ -12,71 +12,23 @@ namespace PGBLib.IO.Win32
     {
         public static void RunTest()
         {
-
-            for (int i = 0; i < 5; i++)
-            {
-                DateTime now = DateTime.Now;
-                long bytes = 0;
-                long files = 0;
-                //foreach (var v in new FileEnumerable("C:\\Program Files (x86)", "*w*", SearchOption.AllDirectories))
-                //{
-                //    bytes += v.Size;
-                //    files++;
-                //}
-                TimeSpan elapsed = DateTime.Now - now;
-
-                //now = DateTime.Now;
-                //bytes = 0;
-                //files = 0;
-                //foreach (var v in new DirectoryInfo("C:\\Program Files (x86)").GetFiles("*", SearchOption.AllDirectories))
-                //{
-                //    bytes += v.Length;
-                //    files++;
-                //}
-                //elapsed = DateTime.Now - now;
-                //Console.WriteLine(SizeSuffix(bytes) + " in " + files + " files in " + elapsed.TotalSeconds + " seconds (Non-perf)");
-
-                //now = DateTime.Now;
-                //bytes = 0;
-                //files = 0;
-                //foreach (var v in new DirectoryInfo("F:\\2015").EnumerateFiles("*", SearchOption.AllDirectories))
-                //{
-                //    bytes += v.Length;
-                //    files++;
-                //}
-                //elapsed = DateTime.Now - now;
-
-                //Console.WriteLine(SizeSuffix(bytes) + " in " + files + " files in " + elapsed.TotalSeconds + " seconds (enumerate)");
-
-                now = DateTime.Now;
-                bytes = 0;
-                files = 0;
-                int errorNum = 0;
-
-                DirectoryScanner scanner = new DirectoryScanner("C:\\");
-                scanner.Errored += (ob, error) => {
-                    errorNum++;
-                    Console.WriteLine("Error #" + errorNum + " " + ob.Name + " was inaccessable.");
-                };
-                scanner.Blacklist.Add(@"C:\Program Files (x86)\Steam");
-                foreach (var v in scanner)
-                {
-                    bytes += v.Length;
-                    files++;
-                }
-
-                elapsed = DateTime.Now - now;
-
-                Console.WriteLine(SizeSuffix(bytes) + " in " + files + " files in " + elapsed.TotalSeconds + " seconds (custom enumerate)");
-                Console.WriteLine();
-            }
-
+            string file = @"C:\Users\Elizabeth\Desktop\DataStore.edb";
+            string dest = @"D:\DataStore.edb";
+            SingleFileBackupTask task = new SingleFileBackupTask(file, dest);
+            task.BackupProgress += Task_BackupProgress;
+            task.Complete += Task_Complete;
+            task.Run();
             Console.ReadKey();
-        }      
+        }
 
-        private static void Scanner_ScannerErrored(UnauthorizedAccessException error)
+        private static void Task_Complete()
         {
+            Console.WriteLine("Done!");
+        }
 
+        private static void Task_BackupProgress(object sender, BackupProgressEventArgs e)
+        {
+            Console.WriteLine(e.PercentComplete + "%");
         }
 
         static readonly string[] SizeSuffixes =

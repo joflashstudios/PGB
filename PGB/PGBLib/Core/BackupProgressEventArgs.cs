@@ -9,21 +9,21 @@ namespace PGBLib.Core
 {
     public class BackupProgressEventArgs : EventArgs
     {
-        OperationProgressDetails OperationDetails { get; }
-        long BytesPending { get; }
-        long BytesComplete { get; }
-        int OperationsPending { get; }
-        int OperationsComplete { get; }
-        int PercentComplete
+        public OperationProgressDetails OperationDetails { get; }
+        public long BytesPending { get; }
+        public long BytesComplete { get; }
+        public int OperationsPending { get; }
+        public int OperationsComplete { get; }
+        public int PercentComplete
         {
             get
             {
                 if (OperationsPending == 1)
-                    return (OperationsComplete * 100) / (OperationsPending + OperationsComplete);
+                    return (int)((BytesComplete * 100) / (BytesPending + BytesComplete));
                 else
                     return (int)
                         (((OperationsComplete * 100) / (OperationsPending + OperationsComplete)) +
-                        ((BytesComplete * 100) / (BytesPending + BytesComplete)))
+                        (((BytesComplete + OperationDetails.BytesTransferred) * 100) / (BytesPending + BytesComplete + OperationDetails.BytesTotal)))
                         / 2;
             }
         }

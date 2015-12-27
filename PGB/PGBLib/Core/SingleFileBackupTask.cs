@@ -7,7 +7,7 @@ using PGBLib.IO;
 
 namespace PGBLib.Core
 {
-    class SingleFileBackupTask : BackupTask
+    public class SingleFileBackupTask : BackupTask
     {
         public bool DeleteSource { get; set; }
         public bool Overwrite { get; set; }
@@ -50,12 +50,14 @@ namespace PGBLib.Core
 
         private void Worker_ProgressMade(object sender, OperationProgressDetails progress)
         {
-            OnBackupProgress(new BackupProgressEventArgs(progress, progress.BytesTotal - progress.BytesTransferred, progress.BytesTransferred, 1, 0));
-
             if (progress.Completed)
             {
                 ((OperationWorker)sender).Dispose();
                 OnComplete();
+            }
+            else
+            {
+                OnBackupProgress(new BackupProgressEventArgs(progress, progress.BytesTotal - progress.BytesTransferred, progress.BytesTransferred, 1, 0));
             }
         }
     }
