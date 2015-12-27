@@ -9,7 +9,9 @@ namespace PGBLib.Core
     [Serializable]
     class IncrementalBackup : Backup
     {
-        SortedSet<IncrementalBackupStep> Steps = new SortedSet<IncrementalBackupStep>(new IncrementalBackupStepComparer());
+        public SortedSet<IncrementalBackupStep> Steps { get { return steps; } }
+
+        private SortedSet<IncrementalBackupStep> steps = new SortedSet<IncrementalBackupStep>(new IncrementalBackupStepComparer());
 
         public override void Run()
         {

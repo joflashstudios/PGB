@@ -11,14 +11,23 @@ namespace PGBLib.Core
     [Serializable]
     public class IncrementalBackupStep
     {
-        public IncrementalBackupStep(string path)
+        public IncrementalBackupStep(string path, bool isMaster)
         {
             Path = path;
             Date = DateTime.Now;
+            IsMaster = isMaster;
         }
 
         public string Path { get; }
         public DateTime Date { get; }
+
+        //Masters only store deleted files.
+        public bool IsMaster { get; }
+
+        public void DumpData()
+        {
+            data = null;
+        }
 
         public bool FileDeleted(string file)
         {
@@ -28,6 +37,9 @@ namespace PGBLib.Core
 
         public bool FileAdded(string file)
         {
+            if (IsMaster)
+                return File.Exists(Path + file);
+
             LoadData();
             return data.FileAdded(file);
         }
