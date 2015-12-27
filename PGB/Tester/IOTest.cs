@@ -56,7 +56,7 @@ namespace PGBLib.IO.Win32
                 scanner.Errored += (ob, error) => {
                     Console.WriteLine(ob.Name + " was inaccessable.");
                 };
-                scanner.blacklist.Add(@"C:\Program Files (x86)\Steam");
+                scanner.Blacklist.Add(@"C:\Program Files (x86)\Steam");
                 foreach (var v in scanner)
                 {
                     bytes += v.Length;

@@ -12,7 +12,7 @@ namespace PGBLib.IO
     public class DirectoryScanner : IEnumerable<FileInfo>
     {
         private string path;
-        public HashSet<string> blacklist { get; set; }
+        public HashSet<string> Blacklist { get; set; }
         public event ScannerErrorHandler Errored;
 
         protected virtual void OnError(FileSystemInfo obj, Exception e)
@@ -33,14 +33,14 @@ namespace PGBLib.IO
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            DirectoryEnumerator en = new DirectoryEnumerator(path, blacklist);
+            DirectoryEnumerator en = new DirectoryEnumerator(path, Blacklist);
             en.Errored += EnumeratorErrored;
             return en;            
         }
 
         public IEnumerator<FileInfo> GetEnumerator()
         {
-            DirectoryEnumerator en = new DirectoryEnumerator(path, blacklist);
+            DirectoryEnumerator en = new DirectoryEnumerator(path, Blacklist);
             en.Errored += EnumeratorErrored;
             return en;
         }
