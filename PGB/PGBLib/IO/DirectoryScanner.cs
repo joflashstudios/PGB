@@ -71,18 +71,9 @@ namespace PGBLib.IO
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool MoveNext()
             {
-                //If there's nothing left in the folder, move on
-                try
-                {
-                    if (!enumerator.MoveNext())
-                    {
-                        return NextDirectory();
-                    }
-                }
-                catch (UnauthorizedAccessException e)
-                {
+                //If there's nothing left in the folder, move on                
+                if (!enumerator.MoveNext())
                     return NextDirectory();
-                }
                 
                 //Add subfolders to the stack until we hit a file or run out
                 bool continuing = true;
@@ -98,9 +89,7 @@ namespace PGBLib.IO
 
                 //If we've run out, then move on
                 if (!continuing)
-                {
                     return NextDirectory();
-                }
 
                 //Otherwise, conditionally add the file
                 if (blacklist.Count == 0 || !blacklist.Contains(enumerator.Current.FullName))
@@ -115,15 +104,22 @@ namespace PGBLib.IO
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private bool NextDirectory()
-            {                
-                if (directories.Count != 0)
+            {
+                try
                 {
-                    DirectoryInfo dir = directories.Pop();
-                    enumerator.Dispose();
-                    enumerator = dir.EnumerateFileSystemInfos().GetEnumerator();
-                    return MoveNext();
+                    if (directories.Count != 0)
+                    {
+                        DirectoryInfo dir = directories.Pop();
+                        enumerator.Dispose();
+                        enumerator = dir.EnumerateFileSystemInfos().GetEnumerator();
+                        return MoveNext();
+                    }
+                    return false;
                 }
-                return false;
+                catch (UnauthorizedAccessException e)
+                {
+                    return NextDirectory();
+                }
             }
 
             public void Reset()
