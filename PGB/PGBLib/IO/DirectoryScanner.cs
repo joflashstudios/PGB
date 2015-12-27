@@ -12,7 +12,7 @@ namespace PGBLib.IO
     public class DirectoryScanner : IEnumerable<FileInfo>
     {
         private string path;
-        public HashSet<string> blacklist { get; set; }
+        public HashSet<string> Blacklist { get; set; }
         public event ScannerErrorHandler Errored;
 
         protected virtual void OnError(FileSystemInfo obj, Exception e)
@@ -23,22 +23,24 @@ namespace PGBLib.IO
                 errorEvent(obj, e);
         }
 
+        public event DirectoryScanErrorHandler ScannerErrored;
+
         public DirectoryScanner(string path)
         {
             this.path = path;
-            blacklist = new HashSet<string>();
+            Blacklist = new HashSet<string>();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            DirectoryEnumerator en = new DirectoryEnumerator(path, blacklist);
+            DirectoryEnumerator en = new DirectoryEnumerator(path, Blacklist);
             en.Errored += EnumeratorErrored;
             return en;            
         }
 
         public IEnumerator<FileInfo> GetEnumerator()
         {
-            DirectoryEnumerator en = new DirectoryEnumerator(path, blacklist);
+            DirectoryEnumerator en = new DirectoryEnumerator(path, Blacklist);
             en.Errored += EnumeratorErrored;
             return en;
         }
@@ -52,6 +54,8 @@ namespace PGBLib.IO
         {
             private DirectoryInfo topDirectory;
             private HashSet<string> blacklist;
+
+            public event DirectoryScanErrorHandler ScannerErrored;
 
             IEnumerator<FileSystemInfo> enumerator;
 
@@ -83,7 +87,7 @@ namespace PGBLib.IO
                 }
             }
 
-            private FileInfo current;
+            private FileInfo current;       
 
             object IEnumerator.Current
             {
@@ -95,16 +99,16 @@ namespace PGBLib.IO
 
             public void Dispose()
             {
-                enumerator.Dispose();
+                enumerator.Dispose();                
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool MoveNext()
             {
-                //If there's nothing left in the folder, move on                
-                if (!enumerator.MoveNext())
-                    return NextDirectory();
-
+                //If there's nothing left in the folder, move on
+                    if (!enumerator.MoveNext())
+                        return NextDirectory();
+                
                 //Add subfolders to the stack until we hit a file or run out
                 bool continuing = true;
                 for (DirectoryInfo currentAsDirectory = this.enumerator.Current as DirectoryInfo; currentAsDirectory != null; currentAsDirectory = this.enumerator.Current as DirectoryInfo)
@@ -129,21 +133,21 @@ namespace PGBLib.IO
                 }
 
                 //This file was blacklisted - move on
-                return MoveNext();
+                return MoveNext();                
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private bool NextDirectory()
-            {
+            {                
                 if (directories.Count != 0)
                 {
                     DirectoryInfo dir = directories.Pop();
                     enumerator.Dispose();
                     try
                     {
-                        enumerator = dir.EnumerateFileSystemInfos().GetEnumerator();
-                        return MoveNext();
-                    }
+                    enumerator = dir.EnumerateFileSystemInfos().GetEnumerator();
+                    return MoveNext();
+                }
                     catch (UnauthorizedAccessException e)
                     {
                         OnError(dir, e);
@@ -158,5 +162,7 @@ namespace PGBLib.IO
                 enumerator.Reset();
             }
         }
+
+        public delegate void DirectoryScanErrorHandler(UnauthorizedAccessException error);
     }
 }

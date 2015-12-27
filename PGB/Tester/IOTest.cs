@@ -58,7 +58,7 @@ namespace PGBLib.IO.Win32
                     errorNum++;
                     Console.WriteLine("Error #" + errorNum + " " + ob.Name + " was inaccessable.");
                 };
-                scanner.blacklist.Add(@"C:\Program Files (x86)\Steam");
+                scanner.Blacklist.Add(@"C:\Program Files (x86)\Steam");
                 foreach (var v in scanner)
                 {
                     bytes += v.Length;
@@ -73,6 +73,11 @@ namespace PGBLib.IO.Win32
 
             Console.ReadKey();
         }      
+
+        private static void Scanner_ScannerErrored(UnauthorizedAccessException error)
+        {
+
+        }
 
         static readonly string[] SizeSuffixes =
                    { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
