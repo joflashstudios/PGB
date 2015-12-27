@@ -155,7 +155,9 @@ namespace PGBLib.IO
                 if (progressOp != null)
                 {                    
                     IOProgressCallback copyCall = new IOProgressCallback((pending, transferred, sourceFile, destinationFile) => {
-                        OnProgress(new OperationProgressDetails(operation, transferred, pending));
+                        OperationProgressDetails details = new OperationProgressDetails(operation, transferred, pending);
+                        activeOperations[operation] = details;
+                        OnProgress(details);
 
                         //TODO: potentially add in-file pause to this? Right now we only support one in-file operation: cancel.
                         if (State == OperationState.Terminated)
@@ -177,7 +179,10 @@ namespace PGBLib.IO
             finally
             {
                 lock(statLock)
-                { 
+                {
+                    if (operation.EffectiveFileSize > 0 && activeOperations.ContainsKey(operation))
+                        activeOperations.Remove(operation);
+
                     bytesProcessed += operation.EffectiveFileSize;
                     operationsProcessed += 1;
                 }
@@ -189,21 +194,6 @@ namespace PGBLib.IO
 
         private void OnProgress(OperationProgressDetails details)
         {
-            lock(statLock)
-            {   //We only track non-zero operations, because they're the only ongoing ones
-                if (details.Operation.EffectiveFileSize > 0)
-                {
-                    if (details.Completed && activeOperations.ContainsKey(details.Operation))
-                    {
-                        activeOperations.Remove(details.Operation);
-                    }
-                    else
-                    {
-                        activeOperations[details.Operation] = details;
-                    }
-                }
-            }
-
             OperationProgressHandler handler;
             lock (eventLock)
             {
