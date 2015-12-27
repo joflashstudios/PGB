@@ -9,10 +9,11 @@ using System.Threading;
 
 namespace PGBLib.Core
 {
+    [Serializable]
     public class UpdateBackup : Backup
     {
         public bool RemoveDeletedFiles { get; set; }
-
+        
         private OperationManager manager;
         private Thread scanThread;
 

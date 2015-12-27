@@ -15,9 +15,7 @@ namespace PGBLib.IO.Win32
             string file = @"C:\Users\Elizabeth\Desktop\DataStore.edb";
             string dest = @"D:\DataStore.edb";
             SingleFileBackup task = new SingleFileBackup(file, dest);
-            task.BackupProgress += Task_BackupProgress;
-            task.Complete += Task_Complete;
-            task.Run();
+            task.SaveToFile("D:\\task.pgb");
             Console.ReadKey();
         }
 

@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
+using System.IO;
 
 namespace PGBLib.Core
 {
+    [Serializable]
     public abstract class Backup
     {
         public abstract void Run();
@@ -28,6 +31,15 @@ namespace PGBLib.Core
         {
             if (Complete != null)
                 Complete();
+        }
+
+        public void SaveToFile(string fileName)
+        {
+            using (FileStream writer = new FileStream(fileName, FileMode.Create))
+            {
+                XmlSerializer serializer = new XmlSerializer(this.GetType());
+                serializer.Serialize(writer, this);
+            }
         }
     }
 }

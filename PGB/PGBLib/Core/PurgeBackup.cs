@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace PGBLib.Core
 {
+    [Serializable]
     class PurgeBackup : Backup
     {
         public override void Run()

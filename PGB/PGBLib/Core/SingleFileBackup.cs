@@ -7,6 +7,7 @@ using PGBLib.IO;
 
 namespace PGBLib.Core
 {
+    [Serializable]
     public class SingleFileBackup : Backup
     {
         public bool DeleteSource { get; set; }
