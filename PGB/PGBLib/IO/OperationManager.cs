@@ -95,6 +95,7 @@ namespace PGBLib.IO
 
             state = OperationState.Running;
         }
+
         public void Pause()
         {
             foreach (KeyValuePair<RootSet, OperationWorker> set in workers)
@@ -103,6 +104,7 @@ namespace PGBLib.IO
             }
             state = OperationState.Paused;
         }
+
         public void Terminate()
         {
             foreach (KeyValuePair<RootSet, OperationWorker> set in workers)

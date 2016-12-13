@@ -44,10 +44,7 @@
   <ItemGroup>
     <Compile Include="Core\BackupProgressEventArgs.cs" />
     <Compile Include="Core\Backup.cs" />
-    <Compile Include="Core\IncrementalBackupAbstractionLayer.cs" />
-    <Compile Include="Core\IncrementalBackupStep.cs" />
     <Compile Include="Core\SingleFileBackup.cs" />
-    <Compile Include="Core\IncrementalBackup.cs" />
     <Compile Include="Core\PurgeBackup.cs" />
     <Compile Include="Core\UpdateBackup.cs" />
     <Compile Include="GlobalSuppressions.cs" />

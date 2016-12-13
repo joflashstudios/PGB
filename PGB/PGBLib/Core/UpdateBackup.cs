@@ -44,6 +44,7 @@ namespace PGBLib.Core
         private void ScanDirectories()
         {
             ScanSource();
+
             if (RemoveDeletedFiles)
                 ScanDestination();
 

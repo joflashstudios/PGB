@@ -106,8 +106,8 @@ namespace PGBLib.IO
             public bool MoveNext()
             {
                 //If there's nothing left in the folder, move on
-                    if (!enumerator.MoveNext())
-                        return NextDirectory();
+                if (!enumerator.MoveNext())
+                    return NextDirectory();
                 
                 //Add subfolders to the stack until we hit a file or run out
                 bool continuing = true;
