@@ -12,10 +12,20 @@ namespace PGBLib.IO.Win32
     {
         public static void RunTest()
         {
-            string file = @"C:\Users\Elizabeth\Desktop\DataStore.edb";
-            string dest = @"D:\DataStore.edb";
-            SingleFileBackup task = new SingleFileBackup(file, dest);
-            task.SaveToFile("D:\\task.pgb");
+            PurgeBackup backup = new PurgeBackup();
+
+            backup.Source = @"C:\Users\Trinity\Documents\Downloads";
+            backup.Destination = @"H:\Backups\Download Purge";
+
+            backup.BackupProgress += Task_BackupProgress;
+            backup.Complete += Task_Complete;
+
+            backup.StaleTime = TimeSpan.FromDays(30);
+            backup.ExpiredTime = TimeSpan.FromDays(365);
+
+            backup.Run();
+
+            backup.SaveToFile("D:\\task.pgb");
             Console.ReadKey();
         }
 
@@ -31,6 +41,7 @@ namespace PGBLib.IO.Win32
 
         static readonly string[] SizeSuffixes =
                    { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+
         static string SizeSuffix(long value)
         {
             if (value < 0) { return "-" + SizeSuffix(-value); }

@@ -14,27 +14,28 @@ namespace PGBLib.Core
     {
         public bool RemoveDeletedFiles { get; set; }
         
-        private OperationManager manager;
-        private Thread scanThread;
-
-        private bool scanComplete;
+        private OperationManager _manager;
+        private bool _scanComplete;
 
         public override void Run()
         {
-            manager = new OperationManager();
-            scanThread = new Thread(new ThreadStart(ScanDirectories));
+            _scanComplete = false;
+
+            _manager = new OperationManager();
+            Thread scanThread = new Thread(ScanDirectories);
             scanThread.Name = "Scanner thread for update backup " + Source;
-            manager.ProgressMade += Manager_ProgressMade;
-            manager.Start();
+            _manager.ProgressMade += Manager_ProgressMade;
+            _manager.Start();
             scanThread.Start();
         }
 
         private void Manager_ProgressMade(object sender, OperationProgressDetails progress)
         {
+            OperationManager manager = (OperationManager) sender;
             BackupProgressEventArgs args = new BackupProgressEventArgs(progress, manager.BytesPending, manager.BytesProcessed, manager.OperationsPending, manager.OperationsProcessed);
             OnBackupProgress(args);
 
-            if (scanComplete && manager.OperationsPending == 0)
+            if (_scanComplete && manager.OperationsPending == 0)
             {
                 manager.Dispose();
                 OnComplete();
@@ -48,7 +49,7 @@ namespace PGBLib.Core
             if (RemoveDeletedFiles)
                 ScanDestination();
 
-            scanComplete = true;
+            _scanComplete = true;
         }
 
         private void ScanDestination()
@@ -56,12 +57,12 @@ namespace PGBLib.Core
             DirectoryScanner scanTron = new DirectoryScanner(Destination);
             foreach (FileInfo file in scanTron)
             {
-                FileInfo matchingSourceFile = new FileInfo(Helpers.TransformPath(Destination, Source, file.FullName));
+                FileInfo matchingSourceFile = new FileInfo(file.TranslatePath(Destination, Source));
                 if (!matchingSourceFile.Exists)
                 {
                     DeleteOperation delete = new DeleteOperation(file.FullName);
                     delete.DeleteEmptyFolder = true;
-                    manager.AddOperation(delete);
+                    _manager.AddOperation(delete);
                 }
             }
         }
@@ -71,7 +72,7 @@ namespace PGBLib.Core
             DirectoryScanner scanTron = new DirectoryScanner(Source);
             foreach (FileInfo file in scanTron)
             {
-                FileInfo destination = new FileInfo(Helpers.TransformPath(Source, Destination, file.FullName));
+                FileInfo destination = new FileInfo(file.TranslatePath(Source, Destination));
 
                 if (destination.Exists && (destination.LastWriteTime >= file.LastWriteTime))
                     continue;
@@ -81,7 +82,7 @@ namespace PGBLib.Core
                 copy.Overwrite = true;
                 copy.CreateFolder = true;
 
-                manager.AddOperation(copy);
+                _manager.AddOperation(copy);
             }
         }
     }

@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Core\BackupProgressEventArgs.cs" />
     <Compile Include="Core\Backup.cs" />
+    <Compile Include="Core\FileInfoExtensions.cs" />
     <Compile Include="Core\SingleFileBackup.cs" />
     <Compile Include="Core\PurgeBackup.cs" />
     <Compile Include="Core\UpdateBackup.cs" />
@@ -55,7 +56,6 @@
     <Compile Include="IO\Exceptions\DirectoryAlreadyExistsException.cs" />
     <Compile Include="IO\Exceptions\DiskFullException.cs" />
     <Compile Include="IO\Exceptions\SharingViolationException.cs" />
-    <Compile Include="IO\Helpers.cs" />
     <Compile Include="IO\MoveOperation.cs" />
     <Compile Include="IO\OperationProgressDetails.cs" />
     <Compile Include="IO\OperationState.cs" />

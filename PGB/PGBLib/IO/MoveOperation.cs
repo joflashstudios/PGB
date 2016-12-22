@@ -6,6 +6,16 @@ namespace PGBLib.IO
 {
     public class MoveOperation : CopyOperation
     {
+        public MoveOperation()
+        {
+            
+        }
+
+        public MoveOperation(string fileName, string transferDestination) : base(fileName, transferDestination)
+        {
+            
+        }
+
         public override void DoOperation()
         {
             DoOperation(null);
